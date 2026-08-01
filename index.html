@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlowDoctor - Advanced Flow Trainer</title>
+  <!-- FAVICON (LOGO NA PASKU PRZEGLĄDARKI) -->
+  <link rel="icon" type="image/png" href="logo.png">
+
+  <!-- GOOGLE FONTS (NOWOCZESNA CZCIONKA MONTSERRAT) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+  <!-- Biblioteka SQL.js do obsługi bazy SQLite w przeglądarce -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+
+    body {
+      background-color: #121212;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* SUBTELNE TŁO STUDIO FLOWDOCTOR */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(rgba(18, 18, 18, 0.85), rgba(18, 18, 18, 0.85)), 
+                  url('background.png') no-repeat center center fixed;
+      background-size: cover;
+      filter: blur(4px); /* Lekki blur dla luzackiego, głębokiego klimatu */
+      opacity: 0.35; /* Bardzo delikatna widoczność */
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* LEWY GÓRNY RÓG - LOGO FLOWDOCTOR (POWIĘKSZONE x1.5) */
+    .brand-logo {
+      position: absolute;
+      top: 25px;
+      left: 20px;
+      width: 150px; /* Zwiększone z 140px o 1.5x */
+      height: auto;
+      z-index: 10;
+      filter: drop-shadow(0px 0px 14px rgba(255, 215, 0, 0.4)) drop-shadow(0px 2px 5px rgba(255, 255, 255, 0.25));
+      transition: transform 0.2s ease;
+    }
+
+    .brand-logo:hover {
+      transform: scale(1.03);
+    }
+
+    /* PRAWY GÓRNY RÓG - WIDŻET AUDIO */
+    .audio-widget {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #1e1e1e;
+      padding: 12px 18px;
+      border-radius: 10px;
+      border: 1px solid #333;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 250px;
+      z-index: 10;
+    }
+
+    .audio-upload-btn {
+      background-color: #2b2b2b;
+      color: #fff;
+      border: 1px solid #444;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.2s;
+    }
+
+    .audio-upload-btn:hover {
+      background-color: #383838;
+      border-color: #4caf50;
+    }
+
+    .audio-controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .audio-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .track-name {
+      font-size: 0.85rem;
+      color: #4caf50;
+      font-weight: bold;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 160px;
+    }
+
+    .btn-delete-audio {
+      background: #f44336;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-delete-audio:hover { background: #da190b; }
+
+    .volume-group, .shift-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: #aaa;
+    }
+
+    .volume-group input[type="range"], .shift-group input[type="range"] {
+      flex: 1;
+      accent-color: #4caf50;
+      cursor: pointer;
+    }
+
+    .shift-val {
+      min-width: 42px;
+      text-align: right;
+    }
+
+    /* NAGŁÓWEK NAD USTAWIENIAMI */
+    h1 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 900;
+      margin-bottom: 20px;
+      font-size: 2.2rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: #4caf50;
+      margin-top: 40px;
+      text-shadow: 0 0 15px rgba(76, 175, 80, 0.4), 0 2px 10px rgba(0, 0, 0, 0.9);
+      text-align: center;
+    }
+
+    .controls {
+      background: #1e1e1e;
+      padding: 20px 30px;
+      border-radius: 12px;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
+
+    .input-group, .flow-group, .subdiv-group, .freespace-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    label {
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: #888;
+    }
+
+    input[type="number"], select {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #444;
+      background: #2b2b2b;
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: bold;
+      text-align: center;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="number"] { width: 75px; }
+
+    .btn-toggle-group {
+      display: flex;
+      gap: 4px;
+      background: #2b2b2b;
+      padding: 4px;
+      border-radius: 6px;
+      border: 1px solid #444;
+    }
+
+    .btn-toggle {
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      background: transparent;
+      color: #888;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .btn-toggle.active {
+      background-color: #4caf50;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);
+    }
+
+    .effective-bpm {
+      font-size: 0.9rem;
+      color: #4caf50;
+      font-weight: bold;
+      min-width: 75px;
+    }
+
+    button {
+      padding: 10px 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn-start { background-color: #4caf50; color: white; }
+    .btn-start:hover { background-color: #45a049; }
+    .btn-stop { background-color: #f44336; color: white; }
+    .btn-stop:hover { background-color: #da190b; }
+
+    input[type="file"] { display: none; }
+
+    /* DYNAMICZNA SIATKA GRY */
+    .grid-container {
+      position: relative;
+      display: grid;
+      gap: 10px;
+      width: 100%;
+      max-width: 900px;
+      background: #000;
+      padding: 12px;
+      border: 4px solid #333;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    /* LASEROWY PASEK PROGRESU NA WIERSZU */
+    .row-scanner {
+      position: absolute;
+      left: 12px;
+      height: 60px;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(76, 175, 80, 0) 0%, rgba(76, 175, 80, 0.3) 70%, rgba(255, 255, 255, 0.8) 100%);
+      border-bottom: 3px solid #4caf50;
+      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.5);
+      pointer-events: none;
+      z-index: 2;
+      display: none;
+      transition: width linear;
+    }
+
+    .cell {
+      position: relative;
+      z-index: 1;
+      height: 60px;
+      background-color: #2a2a2a;
+      border: 2px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(0.8rem, 2vw, 1.3rem);
+      font-weight: 800;
+      color: #000;
+      text-transform: lowercase;
+      border-radius: 4px;
+      transition: background-color 0.05s ease, border-color 0.05s ease;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      padding: 0 4px;
+    }
+
+    .cell.has-word { background-color: #888888; }
+
+    .cell.active {
+      border-color: #ffffff !important;
+      filter: brightness(1.6);
+      box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.9);
+    }
+
+    .cell.color-0 { background-color: #81c784; }
+    .cell.color-1 { background-color: #fff176; }
+    .cell.color-2 { background-color: #64b5f6; }
+    .cell.color-3 { background-color: #ff8a65; }
+
+    /* PRZYCISK RESTART NA DOLE */
+    .footer-controls {
+      margin-top: 25px;
+    }
+
+    .btn-reset {
+      background-color: #2a2a2a;
+      color: #888;
+      border: 1px solid #444;
+      padding: 6px 14px;
+      font-size: 0.8rem;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .btn-reset:hover:not(:disabled) {
+      background-color: #f44336;
+      color: #fff;
+      border-color: #f44336;
+    }
+
+    .btn-reset:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LEWY GÓRNY RÓG - LOGO -->
+  <img src="logo.png" alt="FlowDoctor Logo" class="brand-logo">
+
+  <!-- PRAWY GÓRNY RÓG - WIDŻET AUDIO -->
+  <div class="audio-widget">
+    <label class="audio-upload-btn" for="audioInput" id="audioUploadLabel">
+      + Wgraj Bit (.mp3/.wav)
+    </label>
+    <input type="file" id="audioInput" accept="audio/mp3, audio/wav, audio/mpeg">
+
+    <div class="audio-controls-panel" id="audioPanel" style="display: none;">
+      <div class="audio-info">
+        <span class="track-name" id="trackName">Nazwa_pliku.mp3</span>
+        <button class="btn-delete-audio" id="deleteAudioBtn" title="Usuń bit">X</button>
+      </div>
+      
+      <!-- GŁOŚNOŚĆ -->
+      <div class="volume-group">
+        <span>Głośność:</span>
+        <input type="range" id="volumeSlider" min="0" max="100" value="80">
+        <span id="volumeVal">80%</span>
+      </div>
+
+      <!-- SHIFT (OFFSET AUDIO) -->
+      <div class="shift-group">
+        <span>Shift:</span>
+        <input type="range" id="shiftSlider" min="-4.0" max="4.0" step="0.1" value="0.0">
+        <span class="shift-val" id="shiftVal">0.0s</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRZYWRÓCONY NAPIS NAD USTAWIENIAMI -->
+  <h1>FlowDoctor - Flow Trainer</h1>
+
+  <div class="controls">
+    <div class="input-group">
+      <label for="bpm">BPM:</label>
+      <input type="number" id="bpm" value="140" min="30" max="300">
+    </div>
+
+    <!-- FLOW SEKCJA -->
+    <div class="flow-group">
+      <label>FLOW:</label>
+      <div class="btn-toggle-group">
+        <button class="btn-toggle btn-flow" data-multiplier="0.5">x1/2</button>
+        <button class="btn-toggle btn-flow active" data-multiplier="1">x1</button>
+        <button class="btn-toggle btn-flow" data-multiplier="2">x2</button>
+      </div>
+      <span class="effective-bpm" id="effectiveBpm">(140 BPM)</span>
+    </div>
+
+    <!-- PODZIAŁ WERSU -->
+    <div class="subdiv-group">
+      <label for="subdivSelect">RANGE:</label>
+      <select id="subdivSelect">
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4" selected>4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+      </select>
+    </div>
+
+    <!-- FREE SPACE (ROZBIEG) -->
+    <div class="freespace-group">
+      <label for="freeSpaceSelect">FREE SPACE:</label>
+      <select id="freeSpaceSelect">
+        <option value="2" selected>2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+      </select>
+    </div>
+
+    <button id="startBtn" class="btn-start">START</button>
+  </div>
+
+  <div class="grid-container" id="grid">
+    <div class="row-scanner" id="scanner"></div>
+  </div>
+
+  <div class="footer-controls">
+    <button id="resetBtn" class="btn-reset">↺ Restart Ustawień</button>
+  </div>
+
+  <script>
+    let fallbackPairs = [
+      ["kasa", "masa"], ["rejsy", "sejfy"], ["fala", "czara"], ["beton", "fason"],
+      ["piwo", "wino"], ["niebo", "mleko"], ["rura", "chmura"], ["kranik", "stanik"]
+    ];
+
+    let db = null;
+
+    const grid = document.getElementById('grid');
+    const scanner = document.getElementById('scanner');
+    const startBtn = document.getElementById('startBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const bpmInput = document.getElementById('bpm');
+    const flowButtons = document.querySelectorAll('.btn-flow');
+    const subdivSelect = document.getElementById('subdivSelect');
+    const freeSpaceSelect = document.getElementById('freeSpaceSelect');
+    const effectiveBpmDisplay = document.getElementById('effectiveBpm');
+
+    // AUDIO BIT & SHIFT LOGIKA
+    const audioInput = document.getElementById('audioInput');
+    const audioUploadLabel = document.getElementById('audioUploadLabel');
+    const audioPanel = document.getElementById('audioPanel');
+    const trackName = document.getElementById('trackName');
+    const deleteAudioBtn = document.getElementById('deleteAudioBtn');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const volumeVal = document.getElementById('volumeVal');
+    const shiftSlider = document.getElementById('shiftSlider');
+    const shiftVal = document.getElementById('shiftVal');
+    
+    let audioPlayer = new Audio();
+    audioPlayer.loop = true;
+    let audioTimeoutId = null;
+
+    let isRunning = false;
+    let timerId = null;
+    let currentStep = -1;
+    let flowMultiplier = 1.0;
+    let colsPerRow = 4;
+    const ROWS_COUNT = 6;
+
+    // ŁADOWANIE BAZY DB
+    async function initSql() {
+      try {
+        const SQL = await initSqlJs({
+          locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
+        });
+
+        try {
+          const response = await fetch('rhymes.db');
+          if (response.ok) {
+            const buf = await response.arrayBuffer();
+            db = new SQL.Database(new Uint8Array(buf));
+            console.log("Baza rhymes.db załadowana pomyślnie.");
+          }
+        } catch (e) {
+          console.log("Brak lokalnego rhymes.db. Działa tryb fallback.");
+        }
+      } catch (err) {
+        console.error("Błąd SQL.js:", err);
+      }
+    }
+    initSql();
+
+    // AUDIO EVENTY
+    audioInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      audioPlayer.src = URL.createObjectURL(file);
+      audioPlayer.volume = volumeSlider.value / 100;
+      trackName.textContent = file.name;
+      audioUploadLabel.style.display = 'none';
+      audioPanel.style.display = 'flex';
+    });
+
+    deleteAudioBtn.addEventListener('click', () => {
+      if (audioTimeoutId) clearTimeout(audioTimeoutId);
+      audioPlayer.pause();
+      audioPlayer.src = "";
+      audioInput.value = "";
+      audioPanel.style.display = 'none';
+      audioUploadLabel.style.display = 'block';
+    });
+
+    volumeSlider.addEventListener('input', () => {
+      audioPlayer.volume = volumeSlider.value / 100;
+      volumeVal.textContent = `${volumeSlider.value}%`;
+    });
+
+    shiftSlider.addEventListener('input', () => {
+      const val = parseFloat(shiftSlider.value);
+      shiftVal.textContent = `${val > 0 ? '+' : ''}${val.toFixed(1)}s`;
+    });
+
+    function getGridTotalCells() {
+      return ROWS_COUNT * colsPerRow;
+    }
+
+    function createGrid() {
+      grid.style.gridTemplateColumns = `repeat(${colsPerRow}, 1fr)`;
+      const cells = grid.querySelectorAll('.cell');
+      cells.forEach(c => c.remove());
+
+      const total = getGridTotalCells();
+      for (let i = 0; i < total; i++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.id = `cell-${i}`;
+        grid.appendChild(cell);
+      }
+    }
+
+    function getRandomPair() {
+      if (db) {
+        try {
+          const resA = db.exec("SELECT Assonance, Amount, Word FROM rhymes ORDER BY RANDOM() LIMIT 1;");
+          if (resA.length > 0 && resA[0].values.length > 0) {
+            const [assonance, amount, wordA] = resA[0].values[0];
+
+            const stmt = db.prepare("SELECT Word FROM rhymes WHERE Assonance = :aso AND Amount = :amt AND Word != :wordA ORDER BY RANDOM() LIMIT 1;");
+            stmt.bind({ ':aso': assonance, ':amt': amount, ':wordA': wordA });
+
+            if (stmt.step()) {
+              const rowB = stmt.getAsObject();
+              stmt.free();
+              return [wordA, rowB.Word];
+            }
+            stmt.free();
+
+            return getRandomPair();
+          }
+        } catch (err) {
+          console.error("Błąd SQL:", err);
+        }
+      }
+
+      const randomIndex = Math.floor(Math.random() * fallbackPairs.length);
+      return fallbackPairs[randomIndex];
+    }
+
+    function generateWordsForRows(row1, row2) {
+      const pair = getRandomPair();
+      const colorIndex = Math.floor(Math.random() * 4);
+
+      const cell1Index = (row1 * colsPerRow) + (colsPerRow - 1);
+      const cell2Index = (row2 * colsPerRow) + (colsPerRow - 1);
+
+      const cell1 = document.getElementById(`cell-${cell1Index}`);
+      const cell2 = document.getElementById(`cell-${cell2Index}`);
+
+      if (cell1 && cell2) {
+        cell1.className = 'cell has-word ' + `color-${colorIndex}`;
+        cell2.className = 'cell has-word ' + `color-${colorIndex}`;
+        cell1.textContent = pair[0];
+        cell2.textContent = pair[1];
+      }
+    }
+
+    function getEffectiveBpm() {
+      const baseBpm = parseInt(bpmInput.value) || 120;
+      return baseBpm * flowMultiplier;
+    }
+
+    function updateBpmDisplay() {
+      effectiveBpmDisplay.textContent = `(${getEffectiveBpm()} BPM)`;
+    }
+
+    function getStepIntervalMs() {
+      const rowDurationMs = (60000 / getEffectiveBpm()) * 4;
+      return rowDurationMs / colsPerRow;
+    }
+
+    function getRowDurationMs() {
+      return (60000 / getEffectiveBpm()) * 4;
+    }
+
+    flowButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        flowButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        flowMultiplier = parseFloat(btn.dataset.multiplier);
+        updateBpmDisplay();
+
+        if (isRunning) {
+          clearInterval(timerId);
+          timerId = setInterval(tick, getStepIntervalMs());
+        }
+      });
+    });
+
+    subdivSelect.addEventListener('change', () => {
+      colsPerRow = parseInt(subdivSelect.value);
+      const wasRunning = isRunning;
+      if (isRunning) stop();
+      createGrid();
+      if (wasRunning) start();
+    });
+
+    bpmInput.addEventListener('input', () => {
+      updateBpmDisplay();
+      if (isRunning) {
+        clearInterval(timerId);
+        timerId = setInterval(tick, getStepIntervalMs());
+      }
+    });
+
+    function updateScannerPosition(rowIndex) {
+      const firstCellInRow = document.getElementById(`cell-${rowIndex * colsPerRow}`);
+      if (!firstCellInRow) return;
+
+      const topPos = firstCellInRow.offsetTop;
+      const rowWidth = grid.clientWidth - 24;
+
+      scanner.style.display = 'block';
+      scanner.style.transition = 'none';
+      scanner.style.top = `${topPos}px`;
+      scanner.style.width = '0px';
+
+      void scanner.offsetWidth;
+
+      const durationSec = getRowDurationMs() / 1000;
+      scanner.style.transition = `width ${durationSec}s linear`;
+      scanner.style.width = `${rowWidth}px`;
+    }
+
+    function tick() {
+      const totalCells = getGridTotalCells();
+
+      if (currentStep >= 0) {
+        const prevCell = document.getElementById(`cell-${currentStep}`);
+        if (prevCell) prevCell.classList.remove('active');
+      }
+
+      currentStep = (currentStep + 1) % totalCells;
+
+      if (currentStep % colsPerRow === 0) {
+        const currentRowIndex = Math.floor(currentStep / colsPerRow);
+        updateScannerPosition(currentRowIndex);
+      }
+
+      const lastCellRow1 = colsPerRow - 1;
+      const lastCellRow3 = (3 * colsPerRow) - 1;
+      const lastCellRow5 = (5 * colsPerRow) - 1;
+
+      if (currentStep === lastCellRow3) generateWordsForRows(0, 1);
+      if (currentStep === lastCellRow5) generateWordsForRows(2, 3);
+      if (currentStep === lastCellRow1) generateWordsForRows(4, 5);
+
+      const currentCell = document.getElementById(`cell-${currentStep}`);
+      if (currentCell) currentCell.classList.add('active');
+    }
+
+    function start() {
+      isRunning = true;
+      startBtn.textContent = 'STOP';
+      startBtn.className = 'btn-stop';
+      resetBtn.disabled = true;
+
+      if (audioPlayer.src) {
+        if (audioTimeoutId) clearTimeout(audioTimeoutId);
+
+        const shiftOffset = parseFloat(shiftSlider.value);
+
+        if (shiftOffset < 0) {
+          audioPlayer.currentTime = Math.abs(shiftOffset);
+          audioPlayer.play();
+        } else if (shiftOffset > 0) {
+          audioPlayer.currentTime = 0;
+          audioTimeoutId = setTimeout(() => {
+            if (isRunning) audioPlayer.play();
+          }, shiftOffset * 1000);
+        } else {
+          audioPlayer.currentTime = 0;
+          audioPlayer.play();
+        }
+      }
+
+      createGrid();
+      currentStep = -1;
+
+      const freeSpaceRows = parseInt(freeSpaceSelect.value);
+
+      if (freeSpaceRows < 2) generateWordsForRows(0, 1);
+      if (freeSpaceRows < 4) generateWordsForRows(2, 3);
+      if (freeSpaceRows < 6) generateWordsForRows(4, 5);
+
+      tick();
+      timerId = setInterval(tick, getStepIntervalMs());
+    }
+
+    function stop() {
+      isRunning = false;
+      startBtn.textContent = 'START';
+      startBtn.className = 'btn-start';
+      resetBtn.disabled = false;
+
+      if (audioTimeoutId) clearTimeout(audioTimeoutId);
+
+      if (audioPlayer.src) {
+        audioPlayer.pause();
+      }
+
+      scanner.style.display = 'none';
+
+      clearInterval(timerId);
+      if (currentStep >= 0) {
+        const prevCell = document.getElementById(`cell-${currentStep}`);
+        if (prevCell) prevCell.classList.remove('active');
+      }
+    }
+
+    resetBtn.addEventListener('click', () => {
+      if (isRunning) return;
+
+      bpmInput.value = 140;
+      flowMultiplier = 1.0;
+      flowButtons.forEach(b => b.classList.remove('active'));
+      document.querySelector('.btn-flow[data-multiplier="1"]').classList.add('active');
+
+      subdivSelect.value = "4";
+      colsPerRow = 4;
+
+      freeSpaceSelect.value = "2";
+
+      shiftSlider.value = "0.0";
+      shiftVal.textContent = "0.0s";
+
+      updateBpmDisplay();
+      createGrid();
+    });
+
+    startBtn.addEventListener('click', () => {
+      if (isRunning) stop();
+      else start();
+    });
+
+    updateBpmDisplay();
+    createGrid();
+  </script>
+</body>
+</html>
