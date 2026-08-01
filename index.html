@@ -3,15 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FlowDoctor - Advanced Flow Trainer</title>
-  <!-- FAVICON (LOGO NA PASKU PRZEGLĄDARKI) -->
+  <title>FlowDoctor - Advanced Flow Trainer & Mini DAW</title>
   <link rel="icon" type="image/png" href="logo.png">
 
-  <!-- GOOGLE FONTS (NOWOCZESNA CZCIONKA MONTSERRAT) -->
+  <!-- GOOGLE FONTS -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
-  <!-- Biblioteka SQL.js do obsługi bazy SQLite w przeglądarce -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
   <style>
     * {
@@ -34,7 +32,6 @@
       overflow-x: hidden;
     }
 
-    /* SUBTELNE TŁO STUDIO FLOWDOCTOR */
     body::before {
       content: "";
       position: fixed;
@@ -45,18 +42,17 @@
       background: linear-gradient(rgba(18, 18, 18, 0.85), rgba(18, 18, 18, 0.85)), 
                   url('background.png') no-repeat center center fixed;
       background-size: cover;
-      filter: blur(4px); /* Lekki blur dla luzackiego, głębokiego klimatu */
-      opacity: 0.35; /* Bardzo delikatna widoczność */
+      filter: blur(4px);
+      opacity: 0.35;
       z-index: -1;
       pointer-events: none;
     }
 
-    /* LEWY GÓRNY RÓG - LOGO FLOWDOCTOR (POWIĘKSZONE x1.5) */
     .brand-logo {
       position: absolute;
       top: 25px;
       left: 20px;
-      width: 150px; /* Zwiększone z 140px o 1.5x */
+      width: 150px;
       height: auto;
       z-index: 10;
       filter: drop-shadow(0px 0px 14px rgba(255, 215, 0, 0.4)) drop-shadow(0px 2px 5px rgba(255, 255, 255, 0.25));
@@ -67,7 +63,7 @@
       transform: scale(1.03);
     }
 
-    /* PRAWY GÓRNY RÓG - WIDŻET AUDIO */
+    /* PRAWY GÓRNY RÓG - WIDŻET */
     .audio-widget {
       position: absolute;
       top: 20px;
@@ -79,9 +75,36 @@
       box-shadow: 0 4px 15px rgba(0,0,0,0.5);
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      min-width: 250px;
-      z-index: 10;
+      gap: 10px;
+      min-width: 270px;
+      z-index: 200;
+      transition: opacity 0.3s ease;
+    }
+
+    /* CAŁKOWITE UKRYCIE WIDŻETU W DAW */
+    .audio-widget.in-daw {
+      display: none !important;
+    }
+
+    .open-daw-btn {
+      background: #2b2b2b;
+      color: #4caf50;
+      border: 1px solid #333;
+      border-radius: 6px;
+      padding: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: bold;
+      gap: 6px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .open-daw-btn:hover {
+      background: #383838;
+      color: #fff;
     }
 
     .audio-upload-btn {
@@ -152,12 +175,108 @@
       cursor: pointer;
     }
 
+	.volume-control {
+	  display: flex;
+	  flex-direction: column;
+	  gap: 8px; /* Zwiększ odstęp między tekstem "VOL: X dB" a suwakiem */
+	}
+
+	.volume-label {
+	  font-size: 11px;
+	  font-weight: bold;
+	  margin-bottom: 4px; /* Zapewnia bezpieczny odstęp nad suwakiem */
+	}
+	
     .shift-val {
       min-width: 42px;
       text-align: right;
     }
 
-    /* NAGŁÓWEK NAD USTAWIENIAMI */
+    .visualizer-container {
+      width: 100%;
+      height: 40px;
+      background: #121212;
+      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      margin-top: 2px;
+      overflow: hidden;
+    }
+
+    #beatVisualizer, #micVisualizer {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .record-section {
+      border-top: 1px solid #333;
+      padding-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .btn-record-toggle {
+      width: 100%;
+      padding: 8px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      border-radius: 6px;
+      border: 1px solid #444;
+      background-color: #333333;
+      color: #888888;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-record-toggle:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-record-toggle .rec-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #777777;
+    }
+
+    .btn-record-toggle.active {
+      background-color: #b71c1c;
+      color: #ffffff;
+      border-color: #ff5252;
+      box-shadow: 0 0 10px rgba(255, 82, 82, 0.4);
+    }
+
+    .btn-record-toggle.active .rec-dot {
+      background-color: #ffffff;
+      animation: pulse-dot 1s infinite alternate;
+    }
+
+    @keyframes pulse-dot {
+      0% { opacity: 0.3; }
+      100% { opacity: 1; }
+    }
+
+    .mic-vis-wrapper {
+      display: block;
+    }
+
+    .recorded-audio-container {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .recorded-audio-container audio {
+      width: 100%;
+      height: 30px;
+    }
+
     h1 {
       font-family: 'Montserrat', sans-serif;
       font-weight: 900;
@@ -260,7 +379,6 @@
 
     input[type="file"] { display: none; }
 
-    /* DYNAMICZNA SIATKA GRY */
     .grid-container {
       position: relative;
       display: grid;
@@ -274,7 +392,6 @@
       overflow: hidden;
     }
 
-    /* LASEROWY PASEK PROGRESU NA WIERSZU */
     .row-scanner {
       position: absolute;
       left: 12px;
@@ -323,10 +440,7 @@
     .cell.color-2 { background-color: #64b5f6; }
     .cell.color-3 { background-color: #ff8a65; }
 
-    /* PRZYCISK RESTART NA DOLE */
-    .footer-controls {
-      margin-top: 25px;
-    }
+    .footer-controls { margin-top: 25px; }
 
     .btn-reset {
       background-color: #2a2a2a;
@@ -348,15 +462,303 @@
       opacity: 0.3;
       cursor: not-allowed;
     }
+
+    /* ==================== STRONA DAW (SLIDE-OVER PANEL) ==================== */
+    .daw-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #121212;
+      z-index: 1000;
+      transform: translateX(100%);
+      transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+      display: flex;
+      flex-direction: column;
+      padding: 30px;
+      overflow-y: auto;
+    }
+
+    .daw-overlay.active {
+      transform: translateX(0);
+    }
+
+    .daw-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #2a2a2a;
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+    }
+
+    .daw-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #4caf50;
+      letter-spacing: 2px;
+    }
+
+    .daw-controls-top {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .btn-daw-play {
+      background-color: #f44336;
+      color: #fff;
+      padding: 10px 24px;
+      font-size: 0.95rem;
+      font-weight: 900;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+      transition: background 0.2s;
+    }
+
+    .btn-daw-play.playing {
+      background-color: #ff9800;
+    }
+
+    .btn-back-flowdoctor {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      background-color: #2a2a2a;
+      color: #ffffff;
+      border: 1px solid #444;
+      padding: 10px 20px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 1002;
+      transition: all 0.2s ease;
+    }
+
+    .btn-back-flowdoctor:hover {
+      background-color: #383838;
+      border-color: #4caf50;
+      color: #4caf50;
+    }
+
+    /* TRACKI DAW */
+    .daw-tracks-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    .daw-track-row {
+      background: #181818;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      position: relative;
+    }
+
+    .daw-track-info {
+      width: 220px;
+      padding-right: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex-shrink: 0;
+      border-right: 1px solid #2a2a2a;
+      margin-right: 15px;
+    }
+
+    .daw-track-title {
+      font-size: 0.9rem;
+      font-weight: 900;
+      color: #4caf50;
+      letter-spacing: 1px;
+    }
+
+    .daw-track-status {
+      font-size: 0.75rem;
+      color: #777;
+    }
+
+    /* PASKI GŁOŚNOŚCI W dB */
+    /* ZASTĄP ISTNIEJĄCE .daw-volume-control ORAZ .daw-vol-label TYM KODEM: */
+	.daw-volume-control {
+	  display: flex;
+	  flex-direction: column;
+	  gap: 6px;
+	  margin-top: 6px;
+	  width: 100%;
+	}
+
+	.daw-vol-label {
+	  display: flex;
+	  justify-content: space-between;
+	  align-items: center;
+	  font-size: 0.75rem;
+	  color: #aaa;
+	  font-weight: bold;
+	}
+
+	.daw-volume-slider {
+	  width: 100%;
+	  accent-color: #4caf50;
+	  cursor: pointer;
+	  height: 6px;
+	  margin-top: 2px;
+	}
+
+    .daw-track-timeline-wrapper {
+      flex: 1;
+      height: 100%;
+      background: #0d0d0d;
+      border-radius: 6px;
+      border: 1px solid #222;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+
+    /* KONTENER VISUALIZERA DLUGOSCI ŚCIEŻKI */
+    .daw-track-waveform-box {
+      height: 100%;
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: flex;
+      align-items: center;
+      background: #121212;
+      border-right: 2px solid rgba(255,255,255,0.1);
+      transition: width 0.3s ease;
+    }
+
+    .daw-track-waveform-box canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .daw-empty-wave {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      color: #444;
+      font-size: 0.8rem;
+      font-style: italic;
+      letter-spacing: 1px;
+    }
+
+    /* PIONOWY WSKAŹNIK CZASU (PLAYHEAD) */
+    .daw-playhead {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 2px;
+      background-color: #ff5252;
+      box-shadow: 0 0 8px #ff5252;
+      z-index: 10;
+      pointer-events: none;
+      display: none;
+    }
+	.daw-footer-actions {
+	  position: fixed;
+	  bottom: 30px;
+	  right: 30px;
+	  display: flex;
+	  gap: 12px;
+	  z-index: 1002;
+	}
+
+	.download-dropdown {
+	  position: relative;
+	  display: inline-block;
+	}
+
+	.btn-daw-download {
+	  background-color: #2b2b2b;
+	  color: #4caf50;
+	  border: 1px solid #4caf50;
+	  padding: 10px 18px;
+	  font-size: 0.9rem;
+	  font-weight: bold;
+	  border-radius: 6px;
+	  cursor: pointer;
+	  display: flex;
+	  align-items: center;
+	  gap: 8px;
+	  transition: all 0.2s ease;
+	}
+
+	.btn-daw-download:hover {
+	  background-color: #4caf50;
+	  color: #121212;
+	}
+
+	.download-menu {
+	  display: none;
+	  position: absolute;
+	  bottom: 115%;
+	  right: 0;
+	  background-color: #1e1e1e;
+	  min-width: 180px;
+	  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.6);
+	  border: 1px solid #333;
+	  border-radius: 6px;
+	  overflow: hidden;
+	  z-index: 1003;
+	}
+
+	.download-menu button {
+	  color: #ffffff;
+	  padding: 10px 14px;
+	  text-decoration: none;
+	  display: block;
+	  width: 100%;
+	  text-align: left;
+	  background: none;
+	  border: none;
+	  font-size: 0.85rem;
+	  cursor: pointer;
+	  transition: background 0.2s;
+	}
+
+	.download-menu button:hover {
+	  background-color: #2a2a2a;
+	  color: #4caf50;
+	}
+
+	.download-dropdown.active .download-menu {
+	  display: block;
+	}
   </style>
 </head>
 <body>
 
-  <!-- LEWY GÓRNY RÓG - LOGO -->
   <img src="logo.png" alt="FlowDoctor Logo" class="brand-logo">
 
-  <!-- PRAWY GÓRNY RÓG - WIDŻET AUDIO -->
-  <div class="audio-widget">
+  <!-- WIDŻET AUDIO W PRAWO/LEWO -->
+  <div class="audio-widget" id="audioWidget">
+    <button class="open-daw-btn" id="openDawBtn" title="Otwórz Studio DAW">
+      <span>OTWÓRZ STUDIO DAW</span>
+      <span style="font-size: 1.1rem;">➔</span>
+    </button>
+
     <label class="audio-upload-btn" for="audioInput" id="audioUploadLabel">
       + Wgraj Bit (.mp3/.wav)
     </label>
@@ -367,24 +769,41 @@
         <span class="track-name" id="trackName">Nazwa_pliku.mp3</span>
         <button class="btn-delete-audio" id="deleteAudioBtn" title="Usuń bit">X</button>
       </div>
-      
-      <!-- GŁOŚNOŚĆ -->
+
+      <div class="visualizer-container">
+        <canvas id="beatVisualizer" width="220" height="40"></canvas>
+      </div>
+
       <div class="volume-group">
         <span>Głośność:</span>
         <input type="range" id="volumeSlider" min="0" max="100" value="80">
         <span id="volumeVal">80%</span>
       </div>
 
-      <!-- SHIFT (OFFSET AUDIO) -->
       <div class="shift-group">
         <span>Shift:</span>
         <input type="range" id="shiftSlider" min="-4.0" max="4.0" step="0.1" value="0.0">
         <span class="shift-val" id="shiftVal">0.0s</span>
       </div>
     </div>
+
+    <!-- SEKCJA MIKROFONU -->
+    <div class="record-section" id="recordSection">
+      <button class="btn-record-toggle" id="recordToggleBtn">
+        <span class="rec-dot"></span>
+        <span id="recordBtnText">Record: OFF</span>
+      </button>
+
+      <div class="visualizer-container mic-vis-wrapper" id="micVisWrapper">
+        <canvas id="micVisualizer" width="220" height="40"></canvas>
+      </div>
+
+      <div class="recorded-audio-container" id="recordedAudioContainer">
+        <audio id="recordedAudioPlayer" controls></audio>
+      </div>
+    </div>
   </div>
 
-  <!-- PRZYWRÓCONY NAPIS NAD USTAWIENIAMI -->
   <h1>FlowDoctor - Flow Trainer</h1>
 
   <div class="controls">
@@ -393,7 +812,6 @@
       <input type="number" id="bpm" value="140" min="30" max="300">
     </div>
 
-    <!-- FLOW SEKCJA -->
     <div class="flow-group">
       <label>FLOW:</label>
       <div class="btn-toggle-group">
@@ -404,7 +822,6 @@
       <span class="effective-bpm" id="effectiveBpm">(140 BPM)</span>
     </div>
 
-    <!-- PODZIAŁ WERSU -->
     <div class="subdiv-group">
       <label for="subdivSelect">RANGE:</label>
       <select id="subdivSelect">
@@ -419,7 +836,6 @@
       </select>
     </div>
 
-    <!-- FREE SPACE (ROZBIEG) -->
     <div class="freespace-group">
       <label for="freeSpaceSelect">FREE SPACE:</label>
       <select id="freeSpaceSelect">
@@ -442,12 +858,86 @@
     <button id="resetBtn" class="btn-reset">↺ Restart Ustawień</button>
   </div>
 
-  <script>
-    let fallbackPairs = [
-      ["kasa", "masa"], ["rejsy", "sejfy"], ["fala", "czara"], ["beton", "fason"],
-      ["piwo", "wino"], ["niebo", "mleko"], ["rura", "chmura"], ["kranik", "stanik"]
-    ];
+  <!-- ==================== PANORAMA DAW ==================== -->
+  <div class="daw-overlay" id="dawOverlay">
+    <div class="daw-header">
+      <div class="daw-title">STUDIO DAW</div>
+      <div class="daw-controls-top">
+        <button class="btn-daw-play" id="dawPlayBtn">
+          <span>█ STOP</span>
+        </button>
+      </div>
+    </div>
 
+    <div class="daw-tracks-container">
+      <!-- TRACK 1: BIT -->
+      <div class="daw-track-row">
+        <div class="daw-track-info">
+          <div class="daw-track-title">TRACK 1: BIT</div>
+          <div class="daw-track-status" id="dawBeatStatus">Brak pliku bitu</div>
+          
+          <div class="daw-volume-control">
+            <div class="daw-vol-label">
+              <span>VOL:</span>
+              <span id="beatDbVal">0.0 dB</span>
+            </div>
+            <input type="range" class="daw-volume-slider" id="beatDbSlider" min="-60" max="6" step="0.5" value="0">
+          </div>
+        </div>
+
+        <div class="daw-track-timeline-wrapper" id="dawBeatTimelineWrapper">
+          <div class="daw-empty-wave" id="dawBeatEmpty">PUSTY TRACK (BRAK BITU)</div>
+          <div class="daw-track-waveform-box" id="dawBeatBox" style="display: none;">
+            <canvas id="dawBeatCanvas"></canvas>
+          </div>
+          <div class="daw-playhead" id="dawPlayheadBeat"></div>
+        </div>
+      </div>
+
+      <!-- TRACK 2: WOKAL -->
+      <div class="daw-track-row">
+        <div class="daw-track-info">
+          <div class="daw-track-title" style="color: #f44336;">TRACK 2: WOKAL</div>
+          <div class="daw-track-status" id="dawMicStatus">Brak nagrania</div>
+
+          <div class="daw-volume-control">
+            <div class="daw-vol-label">
+              <span>VOL:</span>
+              <span id="micDbVal">0.0 dB</span>
+            </div>
+            <input type="range" class="daw-volume-slider" id="micDbSlider" min="-60" max="6" step="0.5" value="0" style="accent-color: #f44336;">
+          </div>
+        </div>
+
+        <div class="daw-track-timeline-wrapper" id="dawMicTimelineWrapper">
+          <div class="daw-empty-wave" id="dawMicEmpty">PUSTY TRACK (BRAK WOKALU)</div>
+          <div class="daw-track-waveform-box" id="dawMicBox" style="display: none;">
+            <canvas id="dawMicCanvas"></canvas>
+          </div>
+          <div class="daw-playhead" id="dawPlayheadMic"></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-back-flowdoctor" id="closeDawBtn">
+      <span>◀ POWRÓT DO FLOWDOCTOR</span>
+    </button>
+	<div class="daw-footer-actions">
+      <div class="download-dropdown" id="downloadDropdown">
+        <button class="btn-daw-download" id="downloadMainBtn">
+          <span>💾 POBIERZ</span>
+          <span style="font-size: 0.7rem;">▼</span>
+        </button>
+        <div class="download-menu">
+          <button id="dlBeatBtn">🎵 Pobierz Bit</button>
+          <button id="dlVocalsBtn">🎤 Pobierz Wokal</button>
+          <button id="dlMixBtn" style="border-top: 1px solid #333;">🎛️ Pobierz Miks (Bit + Wokal)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
     let db = null;
 
     const grid = document.getElementById('grid');
@@ -460,7 +950,7 @@
     const freeSpaceSelect = document.getElementById('freeSpaceSelect');
     const effectiveBpmDisplay = document.getElementById('effectiveBpm');
 
-    // AUDIO BIT & SHIFT LOGIKA
+    const audioWidget = document.getElementById('audioWidget');
     const audioInput = document.getElementById('audioInput');
     const audioUploadLabel = document.getElementById('audioUploadLabel');
     const audioPanel = document.getElementById('audioPanel');
@@ -473,7 +963,30 @@
     
     let audioPlayer = new Audio();
     audioPlayer.loop = true;
+    audioPlayer.crossOrigin = "anonymous";
     let audioTimeoutId = null;
+
+    let audioCtx = null;
+    let analyser = null;
+    let sourceNode = null;
+    const canvas = document.getElementById('beatVisualizer');
+    const canvasCtx = canvas.getContext('2d');
+
+    const recordToggleBtn = document.getElementById('recordToggleBtn');
+    const recordBtnText = document.getElementById('recordBtnText');
+    const recordedAudioContainer = document.getElementById('recordedAudioContainer');
+    const recordedAudioPlayer = document.getElementById('recordedAudioPlayer');
+    const micCanvas = document.getElementById('micVisualizer');
+    const micCanvasCtx = micCanvas.getContext('2d');
+
+    let isRecordEnabled = false;
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let recordedBlob = null;
+    let micStream = null;
+    let micAnalyser = null;
+    let micSourceNode = null;
+    let currentRecordUrl = null;
 
     let isRunning = false;
     let timerId = null;
@@ -482,7 +995,40 @@
     let colsPerRow = 4;
     const ROWS_COUNT = 6;
 
-    // ŁADOWANIE BAZY DB
+    // DAW CONTROLERS
+    const openDawBtn = document.getElementById('openDawBtn');
+    const closeDawBtn = document.getElementById('closeDawBtn');
+    const dawOverlay = document.getElementById('dawOverlay');
+    const dawPlayBtn = document.getElementById('dawPlayBtn');
+    const dawBeatStatus = document.getElementById('dawBeatStatus');
+    const dawBeatEmpty = document.getElementById('dawBeatEmpty');
+    const dawBeatBox = document.getElementById('dawBeatBox');
+    const dawBeatCanvas = document.getElementById('dawBeatCanvas');
+
+    const dawMicStatus = document.getElementById('dawMicStatus');
+    const dawMicEmpty = document.getElementById('dawMicEmpty');
+    const dawMicBox = document.getElementById('dawMicBox');
+    const dawMicCanvas = document.getElementById('dawMicCanvas');
+
+    const dawPlayheadBeat = document.getElementById('dawPlayheadBeat');
+    const dawPlayheadMic = document.getElementById('dawPlayheadMic');
+
+    const beatDbSlider = document.getElementById('beatDbSlider');
+    const beatDbVal = document.getElementById('beatDbVal');
+    const micDbSlider = document.getElementById('micDbSlider');
+    const micDbVal = document.getElementById('micDbVal');
+
+    let beatDuration = 0;
+    let micDuration = 0;
+    let isDawPlaying = false;
+    let dawAnimFrame = null;
+
+    function resetMicCanvas() {
+      micCanvasCtx.fillStyle = '#121212';
+      micCanvasCtx.fillRect(0, 0, micCanvas.width, micCanvas.height);
+    }
+    resetMicCanvas();
+
     async function initSql() {
       try {
         const SQL = await initSqlJs({
@@ -494,18 +1040,333 @@
           if (response.ok) {
             const buf = await response.arrayBuffer();
             db = new SQL.Database(new Uint8Array(buf));
-            console.log("Baza rhymes.db załadowana pomyślnie.");
           }
-        } catch (e) {
-          console.log("Brak lokalnego rhymes.db. Działa tryb fallback.");
-        }
-      } catch (err) {
-        console.error("Błąd SQL.js:", err);
-      }
+        } catch (e) {}
+      } catch (err) {}
     }
     initSql();
 
-    // AUDIO EVENTY
+    function dbToLinear(dbVal) {
+      if (dbVal <= -60) return 0;
+      return Math.pow(10, dbVal / 20);
+    }
+
+    beatDbSlider.addEventListener('input', () => {
+      const val = parseFloat(beatDbSlider.value);
+      beatDbVal.textContent = val <= -60 ? '-∞ dB' : `${val > 0 ? '+' : ''}${val.toFixed(1)} dB`;
+      audioPlayer.volume = Math.min(1, Math.max(0, dbToLinear(val)));
+    });
+
+    micDbSlider.addEventListener('input', () => {
+      const val = parseFloat(micDbSlider.value);
+      micDbVal.textContent = val <= -60 ? '-∞ dB' : `${val > 0 ? '+' : ''}${val.toFixed(1)} dB`;
+      recordedAudioPlayer.volume = Math.min(1, Math.max(0, dbToLinear(val)));
+    });
+
+    function setupVisualizer() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (!analyser && audioPlayer.src) {
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 64;
+        analyser.smoothingTimeConstant = 0.8;
+
+        sourceNode = audioCtx.createMediaElementSource(audioPlayer);
+        sourceNode.connect(analyser);
+        analyser.connect(audioCtx.destination);
+      }
+    }
+
+    function drawVisualizer() {
+      if (!analyser) return;
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      function renderFrame() {
+        if (!isRunning && audioPlayer.paused && !isDawPlaying) {
+          canvasCtx.fillStyle = '#121212';
+          canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+          return;
+        }
+
+        requestAnimationFrame(renderFrame);
+        analyser.getByteFrequencyData(dataArray);
+
+        canvasCtx.fillStyle = '#121212';
+        canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const barWidth = (canvas.width / bufferLength) * 1.2;
+        let barHeight;
+        let x = 0;
+
+        for (let i = 0; i < bufferLength; i++) {
+          barHeight = (dataArray[i] / 255) * canvas.height;
+          const gradient = canvasCtx.createLinearGradient(0, canvas.height, 0, 0);
+          gradient.addColorStop(0, '#4caf50');
+          gradient.addColorStop(1, '#ffeb3b');
+
+          canvasCtx.fillStyle = gradient;
+          canvasCtx.fillRect(x, canvas.height - barHeight, barWidth - 1, barHeight);
+          x += barWidth;
+        }
+      }
+      renderFrame();
+    }
+
+    function drawMicVisualizer() {
+      if (!micAnalyser) return;
+      const bufferLength = micAnalyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      function renderMicFrame() {
+        if (!isRunning || !isRecordEnabled) {
+          resetMicCanvas();
+          return;
+        }
+
+        requestAnimationFrame(renderMicFrame);
+        micAnalyser.getByteFrequencyData(dataArray);
+
+        micCanvasCtx.fillStyle = '#121212';
+        micCanvasCtx.fillRect(0, 0, micCanvas.width, micCanvas.height);
+
+        const barWidth = (micCanvas.width / bufferLength) * 1.2;
+        let barHeight;
+        let x = 0;
+
+        for (let i = 0; i < bufferLength; i++) {
+          barHeight = (dataArray[i] / 255) * micCanvas.height;
+          const gradient = micCanvasCtx.createLinearGradient(0, micCanvas.height, 0, 0);
+          gradient.addColorStop(0, '#f44336');
+          gradient.addColorStop(1, '#ff9800');
+
+          micCanvasCtx.fillStyle = gradient;
+          micCanvasCtx.fillRect(x, micCanvas.height - barHeight, barWidth - 1, barHeight);
+          x += barWidth;
+        }
+      }
+      renderMicFrame();
+    }
+
+    recordToggleBtn.addEventListener('click', () => {
+      if (isRunning) return;
+      isRecordEnabled = !isRecordEnabled;
+      if (isRecordEnabled) {
+        recordToggleBtn.classList.add('active');
+        recordBtnText.textContent = "Record: ON";
+      } else {
+        recordToggleBtn.classList.remove('active');
+        recordBtnText.textContent = "Record: OFF";
+      }
+    });
+
+    function clearPreviousRecording() {
+      if (currentRecordUrl) {
+        URL.revokeObjectURL(currentRecordUrl);
+        currentRecordUrl = null;
+      }
+      recordedAudioPlayer.src = "";
+      recordedAudioContainer.style.display = 'none';
+      recordedChunks = [];
+      recordedBlob = null;
+      micDuration = 0;
+      updateDawWaveforms();
+    }
+
+    async function startRecording() {
+      try {
+        micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        micAnalyser = audioCtx.createAnalyser();
+        micAnalyser.fftSize = 64;
+        micSourceNode = audioCtx.createMediaStreamSource(micStream);
+        micSourceNode.connect(micAnalyser);
+
+        mediaRecorder = new MediaRecorder(micStream);
+        recordedChunks = [];
+
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0) recordedChunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = () => {
+          recordedBlob = new Blob(recordedChunks, { type: 'audio/webm' });
+          currentRecordUrl = URL.createObjectURL(recordedBlob);
+          recordedAudioPlayer.src = currentRecordUrl;
+          recordedAudioContainer.style.display = 'flex';
+
+          recordedAudioPlayer.onloadedmetadata = () => {
+            micDuration = recordedAudioPlayer.duration || 0;
+            updateDawWaveforms();
+          };
+
+          if (micStream) {
+            micStream.getTracks().forEach(track => track.stop());
+          }
+        };
+
+        mediaRecorder.start();
+        drawMicVisualizer();
+      } catch (err) {
+        alert("Nie udało się uzyskać dostępu do mikrofonu.");
+        isRecordEnabled = false;
+        recordToggleBtn.classList.remove('active');
+        recordBtnText.textContent = "Record: OFF";
+      }
+    }
+
+    function stopRecording() {
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+      }
+    }
+
+    /* RYSOWANIE STATYCZNEJ FALI PRONOWEJ */
+    function renderBarWaveform(canvasEl, colorHex) {
+      const ctx = canvasEl.getContext('2d');
+      const w = canvasEl.width = canvasEl.parentElement.clientWidth;
+      const h = canvasEl.height = canvasEl.parentElement.clientHeight;
+
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = colorHex;
+
+      const barWidth = 2;
+      const gap = 2;
+      const totalBars = Math.floor(w / (barWidth + gap));
+
+      for (let i = 0; i < totalBars; i++) {
+        const normHeight = Math.abs(Math.sin(i * 0.15) * 0.4 + Math.cos(i * 0.05) * 0.5) * 0.8 + 0.1;
+        const barHeight = normHeight * (h * 0.8);
+        const y = (h - barHeight) / 2;
+        const x = i * (barWidth + gap);
+
+        ctx.fillRect(x, y, barWidth, barHeight);
+      }
+    }
+
+    /* UPDATE OBU WAFELKÓW W DAW Z ADAPTACYJNĄ DŁUGOSCIĄ */
+    function updateDawWaveforms() {
+      const maxDuration = Math.max(beatDuration, micDuration) || 1;
+
+      // BIT TRACK
+      if (audioPlayer.src && beatDuration > 0) {
+        dawBeatStatus.textContent = "Wgrany plik bitu";
+        dawBeatEmpty.style.display = 'none';
+        dawBeatBox.style.display = 'block';
+
+        const beatPercent = (beatDuration / maxDuration) * 100;
+        dawBeatBox.style.width = `${beatPercent}%`;
+        setTimeout(() => renderBarWaveform(dawBeatCanvas, '#4caf50'), 50);
+      } else {
+        dawBeatStatus.textContent = "Brak pliku";
+        dawBeatEmpty.style.display = 'block';
+        dawBeatBox.style.display = 'none';
+      }
+
+      // WOKAL TRACK
+      if (recordedAudioPlayer.src && micDuration > 0) {
+        dawMicStatus.textContent = "Nagrany wokal";
+        dawMicEmpty.style.display = 'none';
+        dawMicBox.style.display = 'block';
+
+        const micPercent = (micDuration / maxDuration) * 100;
+        dawMicBox.style.width = `${micPercent}%`;
+        setTimeout(() => renderBarWaveform(dawMicCanvas, '#f44336'), 50);
+      } else {
+        dawMicStatus.textContent = "Brak nagrania";
+        dawMicEmpty.style.display = 'block';
+        dawMicBox.style.display = 'none';
+      }
+    }
+
+    /* PRZESUWANIE IGŁY POSTĘPU (PLAYHEAD) */
+    function updatePlayheads() {
+      if (!isDawPlaying) {
+        dawPlayheadBeat.style.display = 'none';
+        dawPlayheadMic.style.display = 'none';
+        return;
+      }
+
+      const maxDuration = Math.max(beatDuration, micDuration) || 1;
+
+      if (audioPlayer.src && beatDuration > 0) {
+        dawPlayheadBeat.style.display = 'block';
+        const beatProgress = (audioPlayer.currentTime / maxDuration) * 100;
+        dawPlayheadBeat.style.left = `${Math.min(beatProgress, 100)}%`;
+      }
+
+      if (recordedAudioPlayer.src && micDuration > 0) {
+        dawPlayheadMic.style.display = 'block';
+        const micProgress = (recordedAudioPlayer.currentTime / maxDuration) * 100;
+        dawPlayheadMic.style.left = `${Math.min(micProgress, 100)}%`;
+      }
+
+      dawAnimFrame = requestAnimationFrame(updatePlayheads);
+    }
+
+    openDawBtn.addEventListener('click', () => {
+      if (isRunning) stop();
+      updateDawWaveforms();
+      dawOverlay.classList.add('active');
+      audioWidget.classList.add('in-daw');
+    });
+
+    closeDawBtn.addEventListener('click', () => {
+      stopDawPlayback();
+      dawOverlay.classList.remove('active');
+      audioWidget.classList.remove('in-daw');
+    });
+
+    function stopDawPlayback() {
+      isDawPlaying = false;
+      dawPlayBtn.classList.remove('playing');
+      dawPlayBtn.innerHTML = `<span>█ STOP</span>`;
+      
+      if (dawAnimFrame) cancelAnimationFrame(dawAnimFrame);
+
+      if (audioPlayer.src) {
+        audioPlayer.pause();
+        audioPlayer.currentTime = 0;
+      }
+      if (recordedAudioPlayer.src) {
+        recordedAudioPlayer.pause();
+        recordedAudioPlayer.currentTime = 0;
+      }
+      updatePlayheads();
+    }
+
+    dawPlayBtn.addEventListener('click', () => {
+      if (isDawPlaying) {
+        stopDawPlayback();
+      } else {
+        if (!audioPlayer.src && !recordedAudioPlayer.src) return;
+
+        isDawPlaying = true;
+        dawPlayBtn.classList.add('playing');
+        dawPlayBtn.innerHTML = `<span>PAUZA</span>`;
+
+        if (audioPlayer.src) {
+          audioPlayer.currentTime = 0;
+          audioPlayer.play();
+        }
+
+        if (recordedAudioPlayer.src) {
+          recordedAudioPlayer.currentTime = 0;
+          recordedAudioPlayer.play();
+        }
+
+        updatePlayheads();
+
+        recordedAudioPlayer.onended = () => {
+          if (!audioPlayer.src || audioPlayer.paused) stopDawPlayback();
+        };
+
+        audioPlayer.onended = () => {
+          if (!recordedAudioPlayer.src || recordedAudioPlayer.paused) stopDawPlayback();
+        };
+      }
+    });
+
     audioInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -514,15 +1375,22 @@
       trackName.textContent = file.name;
       audioUploadLabel.style.display = 'none';
       audioPanel.style.display = 'flex';
+
+      audioPlayer.onloadedmetadata = () => {
+        beatDuration = audioPlayer.duration || 0;
+        updateDawWaveforms();
+      };
     });
 
     deleteAudioBtn.addEventListener('click', () => {
       if (audioTimeoutId) clearTimeout(audioTimeoutId);
       audioPlayer.pause();
       audioPlayer.src = "";
+      beatDuration = 0;
       audioInput.value = "";
       audioPanel.style.display = 'none';
       audioUploadLabel.style.display = 'block';
+      updateDawWaveforms();
     });
 
     volumeSlider.addEventListener('input', () => {
@@ -535,9 +1403,7 @@
       shiftVal.textContent = `${val > 0 ? '+' : ''}${val.toFixed(1)}s`;
     });
 
-    function getGridTotalCells() {
-      return ROWS_COUNT * colsPerRow;
-    }
+    function getGridTotalCells() { return ROWS_COUNT * colsPerRow; }
 
     function createGrid() {
       grid.style.gridTemplateColumns = `repeat(${colsPerRow}, 1fr)`;
@@ -559,7 +1425,6 @@
           const resA = db.exec("SELECT Assonance, Amount, Word FROM rhymes ORDER BY RANDOM() LIMIT 1;");
           if (resA.length > 0 && resA[0].values.length > 0) {
             const [assonance, amount, wordA] = resA[0].values[0];
-
             const stmt = db.prepare("SELECT Word FROM rhymes WHERE Assonance = :aso AND Amount = :amt AND Word != :wordA ORDER BY RANDOM() LIMIT 1;");
             stmt.bind({ ':aso': assonance, ':amt': amount, ':wordA': wordA });
 
@@ -569,12 +1434,9 @@
               return [wordA, rowB.Word];
             }
             stmt.free();
-
             return getRandomPair();
           }
-        } catch (err) {
-          console.error("Błąd SQL:", err);
-        }
+        } catch (err) {}
       }
 
       const randomIndex = Math.floor(Math.random() * fallbackPairs.length);
@@ -698,12 +1560,18 @@
       startBtn.textContent = 'STOP';
       startBtn.className = 'btn-stop';
       resetBtn.disabled = true;
+      recordToggleBtn.disabled = true;
+
+      clearPreviousRecording();
+
+      if (isRecordEnabled) startRecording();
 
       if (audioPlayer.src) {
+        setupVisualizer();
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
         if (audioTimeoutId) clearTimeout(audioTimeoutId);
 
         const shiftOffset = parseFloat(shiftSlider.value);
-
         if (shiftOffset < 0) {
           audioPlayer.currentTime = Math.abs(shiftOffset);
           audioPlayer.play();
@@ -716,13 +1584,13 @@
           audioPlayer.currentTime = 0;
           audioPlayer.play();
         }
+        drawVisualizer();
       }
 
       createGrid();
       currentStep = -1;
 
       const freeSpaceRows = parseInt(freeSpaceSelect.value);
-
       if (freeSpaceRows < 2) generateWordsForRows(0, 1);
       if (freeSpaceRows < 4) generateWordsForRows(2, 3);
       if (freeSpaceRows < 6) generateWordsForRows(4, 5);
@@ -736,20 +1604,21 @@
       startBtn.textContent = 'START';
       startBtn.className = 'btn-start';
       resetBtn.disabled = false;
+      recordToggleBtn.disabled = false;
 
+      if (isRecordEnabled) stopRecording();
       if (audioTimeoutId) clearTimeout(audioTimeoutId);
-
-      if (audioPlayer.src) {
-        audioPlayer.pause();
-      }
+      if (audioPlayer.src) audioPlayer.pause();
 
       scanner.style.display = 'none';
-
       clearInterval(timerId);
+
       if (currentStep >= 0) {
         const prevCell = document.getElementById(`cell-${currentStep}`);
         if (prevCell) prevCell.classList.remove('active');
       }
+
+      resetMicCanvas();
     }
 
     resetBtn.addEventListener('click', () => {
@@ -762,7 +1631,6 @@
 
       subdivSelect.value = "4";
       colsPerRow = 4;
-
       freeSpaceSelect.value = "2";
 
       shiftSlider.value = "0.0";
@@ -777,8 +1645,151 @@
       else start();
     });
 
-    updateBpmDisplay();
     createGrid();
+    updateBpmDisplay();
+
+	// OBSŁUGA ROZWIJANIA MENU POBIERANIA
+	const downloadDropdown = document.getElementById('downloadDropdown');
+	const downloadMainBtn = document.getElementById('downloadMainBtn');
+
+	downloadMainBtn.addEventListener('click', (e) => {
+	  e.stopPropagation();
+	  downloadDropdown.classList.toggle('active');
+	});
+
+	// Zamykanie menu po kliknięciu gdziekolwiek indziej
+	document.addEventListener('click', () => {
+	  downloadDropdown.classList.remove('active');
+	});
+
+	// FUNKCJA POMOCNICZA DO POBIERANIA PLIKÓW
+	function triggerDownload(url, filename) {
+	  const a = document.createElement('a');
+	  a.href = url;
+	  a.download = filename;
+	  document.body.appendChild(a);
+	  a.click();
+	  document.body.removeChild(a);
+	}
+
+	// 1. Pobieranie samego Bitu
+	document.getElementById('dlBeatBtn').addEventListener('click', () => {
+	  if (!audioPlayer.src) {
+		alert("Brak wgranego bitu!");
+		return;
+	  }
+	  triggerDownload(audioPlayer.src, trackName.textContent || "bit.mp3");
+	});
+
+	// 2. Pobieranie samego Wokalu
+	document.getElementById('dlVocalsBtn').addEventListener('click', () => {
+	  if (!recordedAudioPlayer.src) {
+		alert("Brak nagranego wokalu!");
+		return;
+	  }
+	  triggerDownload(recordedAudioPlayer.src, "wokal_flowdoctor.webm");
+	});
+
+	// 3. Pobieranie Miksu (Render OfflineAudioContext)
+	document.getElementById('dlMixBtn').addEventListener('click', async () => {
+	  if (!audioPlayer.src && !recordedAudioPlayer.src) {
+		alert("Brak ścieżek do zrenderowania miksu!");
+		return;
+	  }
+
+	  try {
+		const maxDur = Math.max(beatDuration || 0, micDuration || 0);
+		if (maxDur === 0) return;
+
+		const sampleRate = 44100;
+		const offlineCtx = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(2, sampleRate * maxDur, sampleRate);
+
+		// Render bitu z uwzględnieniem suwaka głośności DAW
+		if (audioPlayer.src) {
+		  const resp = await fetch(audioPlayer.src);
+		  const buf = await resp.arrayBuffer();
+		  const audioBuf = await offlineCtx.decodeAudioData(buf);
+		  const src = offlineCtx.createBufferSource();
+		  const gainNode = offlineCtx.createGain();
+		  
+		  const dbVal = parseFloat(beatDbSlider.value);
+		  gainNode.gain.value = dbToLinear(dbVal);
+		  
+		  src.buffer = audioBuf;
+		  src.connect(gainNode);
+		  gainNode.connect(offlineCtx.destination);
+		  src.start(0);
+		}
+
+		// Render wokalu z uwzględnieniem suwaka głośności DAW
+		if (recordedAudioPlayer.src) {
+		  const resp = await fetch(recordedAudioPlayer.src);
+		  const buf = await resp.arrayBuffer();
+		  const audioBuf = await offlineCtx.decodeAudioData(buf);
+		  const src = offlineCtx.createBufferSource();
+		  const gainNode = offlineCtx.createGain();
+
+		  const dbVal = parseFloat(micDbSlider.value);
+		  gainNode.gain.value = dbToLinear(dbVal);
+
+		  src.buffer = audioBuf;
+		  src.connect(gainNode);
+		  gainNode.connect(offlineCtx.destination);
+		  src.start(0);
+		}
+
+		const renderedBuffer = await offlineCtx.startRendering();
+		
+		// Konwersja zrenderowanego bufora do pliku WAV
+		const wavBlob = audioBufferToWav(renderedBuffer);
+		const wavUrl = URL.createObjectURL(wavBlob);
+		triggerDownload(wavUrl, "miks_flowdoctor.wav");
+
+	  } catch (err) {
+		console.error(err);
+		alert("Błąd podczas miksowania ścieżek.");
+	  }
+	});
+
+	// Pomocniczy konwerter AudioBuffer -> WAV Blob
+	function audioBufferToWav(buffer) {
+	  let numOfChan = buffer.numberOfChannels,
+		  len = buffer.length * numOfChan * 2 + 44,
+		  out = new DataView(new ArrayBuffer(len)),
+		  channels = [], i, sample,
+		  offset = 0,
+		  pos = 0;
+
+	  function setUint16(data) { out.setUint16(pos, data, true); pos += 2; }
+	  function setUint32(data) { out.setUint32(pos, data, true); pos += 4; }
+
+	  setUint32(0x46464952); // "RIFF"
+	  setUint32(len - 8);
+	  setUint32(0x45564157); // "WAVE"
+	  setUint32(0x20746d66); // "fmt "
+	  setUint32(16);
+	  setUint16(1);
+	  setUint16(numOfChan);
+	  setUint32(buffer.sampleRate);
+	  setUint32(buffer.sampleRate * 2 * numOfChan);
+	  setUint16(numOfChan * 2);
+	  setUint16(16);
+	  setUint32(0x61746164); // "data"
+	  setUint32(len - pos - 4);
+
+	  for (i = 0; i < buffer.numberOfChannels; i++) channels.push(buffer.getChannelData(i));
+
+	  while (offset < buffer.length) {
+		for (i = 0; i < numOfChan; i++) {
+		  sample = Math.max(-1, Math.min(1, channels[i][offset]));
+		  sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767) | 0;
+		  out.setInt16(pos, sample, true);
+		  pos += 2;
+		}
+		offset++;
+	  }
+	  return new Blob([out], { type: 'audio/wav' });
+	}
   </script>
 </body>
 </html>
