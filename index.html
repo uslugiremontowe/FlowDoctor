@@ -1309,6 +1309,24 @@
 	.at-slider::-webkit-slider-thumb:hover {
 	  transform: scale(1.15);
 	}
+	/* Ukrycie strzałek w input number */
+	#micShiftInput::-webkit-outer-spin-button,
+	#micShiftInput::-webkit-inner-spin-button {
+	  -webkit-appearance: none;
+	  margin: 0;
+	}
+	#micShiftInput[type=number] {
+	  -moz-appearance: textfield;
+	}
+
+	/* Styl dla etykiety Shift */
+	.shift-label {
+	  font-size: 11px;
+	  color: #888;
+	  font-family: inherit;
+	  font-weight: normal;
+	  text-transform: none;
+	}
   </style>
 </head>
 <body>
@@ -1470,6 +1488,19 @@
             </div>
             <input type="range" class="daw-volume-slider" id="micDbSlider" min="-60" max="6" step="0.5" value="0" style="accent-color: #f44336;">
           </div>
+			<div style="margin-top: 6px; display: flex; align-items: center; justify-content: space-between;">
+			  <span class="shift-label">Shift:</span>
+			  <div style="display: flex; align-items: center; gap: 3px;">
+				<input 
+				  type="number" 
+				  id="micShiftInput" 
+				  step="0.01" 
+				  value="0.00" 
+				  style="width: 55px; background: #181818; border: 1px solid #333; color: #4caf50; border-radius: 3px; padding: 1px 4px; text-align: right; font-family: monospace; font-size: 11px; outline: none;"
+				/>
+				<span style="font-size: 11px; color: #888;">s</span>
+			  </div>
+			</div>
         </div>
 
         <div class="daw-track-timeline-wrapper" id="dawMicTimelineWrapper">
@@ -1713,6 +1744,10 @@
     audioPlayer.loop = true;
     audioPlayer.crossOrigin = "anonymous";
     let audioTimeoutId = null;
+	
+	let beatAudioBuffer = null;
+	let micAudioBuffer = null;
+	let micOffsetSeconds = 0;
 
     let audioCtx = null;
     let analyser = null;
@@ -1947,6 +1982,21 @@
             micDuration = recordedAudioPlayer.duration || 0;
             updateDawWaveforms();
           };
+		  
+		  const reader = new FileReader();
+          reader.onload = async (e) => {
+            try {
+              const arrayBuffer = e.target.result;
+              const tempCtx = new (window.AudioContext || window.webkitAudioContext)();
+              micAudioBuffer = await tempCtx.decodeAudioData(arrayBuffer);
+              tempCtx.close();
+              updateDawWaveforms(); // Przerysuj waveform po zdekodowaniu
+            } catch (err) {
+              console.error("Błąd dekodowania wokalu:", err);
+              micAudioBuffer = null;
+            }
+          };
+          reader.readAsArrayBuffer(recordedBlob);
 
           if (micStream) {
             micStream.getTracks().forEach(track => track.stop());
@@ -1970,87 +2020,226 @@
     }
 
     /* RYSOWANIE STATYCZNEJ FALI PRONOWEJ */
-    function renderBarWaveform(canvasEl, colorHex) {
-      const ctx = canvasEl.getContext('2d');
-      const w = canvasEl.width = canvasEl.parentElement.clientWidth;
-      const h = canvasEl.height = canvasEl.parentElement.clientHeight;
+	function renderBarWaveform(canvasEl, colorHex, audioBuffer, offsetSec = 0) {
+	  const ctx = canvasEl.getContext('2d');
+	  const w = canvasEl.width = canvasEl.parentElement.clientWidth;
+	  const h = canvasEl.height = canvasEl.parentElement.clientHeight;
 
-      ctx.clearRect(0, 0, w, h);
-      ctx.fillStyle = colorHex;
+	  ctx.clearRect(0, 0, w, h);
+	  ctx.fillStyle = colorHex;
 
-      const barWidth = 2;
-      const gap = 2;
-      const totalBars = Math.floor(w / (barWidth + gap));
+	  if (!audioBuffer) return;
 
-      for (let i = 0; i < totalBars; i++) {
-        const normHeight = Math.abs(Math.sin(i * 0.15) * 0.4 + Math.cos(i * 0.05) * 0.5) * 0.8 + 0.1;
-        const barHeight = normHeight * (h * 0.8);
-        const y = (h - barHeight) / 2;
-        const x = i * (barWidth + gap);
+	  const rawData = audioBuffer.getChannelData(0);
+	  const totalSamples = rawData.length;
+	  const duration = audioBuffer.duration;
+	  
+	  // Przelicznik: ile próbek na sekundę
+	  const samplesPerSec = totalSamples / duration;
 
-        ctx.fillRect(x, y, barWidth, barHeight);
-      }
-    }
+	  const barWidth = 2;
+	  const gap = 1;
+	  const totalBars = Math.floor(w / (barWidth + gap));
+	  
+	  // Czas trwania widocznego bloku audio na ekranie
+	  const visibleDuration = duration; 
+	  const secondsPerBar = visibleDuration / totalBars;
+
+	  for (let i = 0; i < totalBars; i++) {
+		// Uwzględniamy offset – jeśli offsetSec jest ujemny (np. -2s), 
+		// pomijamy pierwsze 2 sekundy próbek audio przy rysowaniu!
+		const barTimeSec = (i * secondsPerBar) + (offsetSec < 0 ? Math.abs(offsetSec) : 0);
+		const blockStart = Math.floor(barTimeSec * samplesPerSec);
+		const blockSize = Math.floor(secondsPerBar * samplesPerSec);
+
+		if (blockStart >= totalSamples) break;
+
+		let sum = 0;
+		let samplesCount = 0;
+
+		for (let j = 0; j < blockSize; j += 5) {
+		  if (blockStart + j < totalSamples) {
+			const val = rawData[blockStart + j] || 0;
+			sum += val * val;
+			samplesCount++;
+		  }
+		}
+
+		if (samplesCount === 0) continue;
+
+		const rms = Math.sqrt(sum / samplesCount);
+		const barHeight = Math.max(2, rms * h * 1.8); 
+		const y = (h - barHeight) / 2;
+		const x = i * (barWidth + gap);
+
+		ctx.fillRect(x, y, barWidth, barHeight);
+	  }
+	}
 
     /* UPDATE OBU WAFELKÓW W DAW Z ADAPTACYJNĄ DŁUGOSCIĄ */
-    function updateDawWaveforms() {
-      const maxDuration = Math.max(beatDuration, micDuration) || 1;
+	function updateDawWaveforms() {
+	  const maxDuration = Math.max(beatDuration, micDuration) || 1;
 
-      // BIT TRACK
-      if (audioPlayer.src && beatDuration > 0) {
-        dawBeatStatus.textContent = "Wgrany plik bitu";
-        dawBeatEmpty.style.display = 'none';
-        dawBeatBox.style.display = 'block';
+	  // BIT TRACK
+	  if (beatAudioBuffer || (audioPlayer.src && beatDuration > 0)) {
+		// Jeśli z jakiegoś powodu beatDuration jeszcze nie ma, pobierz z bufora
+		if ((!beatDuration || isNaN(beatDuration)) && beatAudioBuffer) {
+		  beatDuration = beatAudioBuffer.duration;
+		}
 
-        const beatPercent = (beatDuration / maxDuration) * 100;
-        dawBeatBox.style.width = `${beatPercent}%`;
-        setTimeout(() => renderBarWaveform(dawBeatCanvas, '#4caf50'), 50);
-      } else {
-        dawBeatStatus.textContent = "Brak pliku";
-        dawBeatEmpty.style.display = 'block';
-        dawBeatBox.style.display = 'none';
-      }
+		dawBeatStatus.textContent = trackName.textContent || "Wgrany bit";
+		dawBeatEmpty.style.display = 'none';
+		dawBeatBox.style.display = 'block';
 
-      // WOKAL TRACK
-      if (recordedAudioPlayer.src && micDuration > 0) {
-        dawMicStatus.textContent = "Nagrany wokal";
-        dawMicEmpty.style.display = 'none';
-        dawMicBox.style.display = 'block';
+		const beatPercent = (beatDuration / maxDuration) * 100;
+		dawBeatBox.style.width = `${beatPercent}%`;
+		setTimeout(() => renderBarWaveform(dawBeatCanvas, '#4caf50', beatAudioBuffer), 50);
+	  } else {
+		dawBeatStatus.textContent = "Brak pliku";
+		dawBeatEmpty.style.display = 'block';
+		dawBeatBox.style.display = 'none';
+	  }
 
-        const micPercent = (micDuration / maxDuration) * 100;
-        dawMicBox.style.width = `${micPercent}%`;
-        setTimeout(() => renderBarWaveform(dawMicCanvas, '#f44336'), 50);
-      } else {
-        dawMicStatus.textContent = "Brak nagrania";
-        dawMicEmpty.style.display = 'block';
-        dawMicBox.style.display = 'none';
-      }
-    }
+	  // WOKAL TRACK
+	  if (recordedAudioPlayer.src && micDuration > 0) {
+		dawMicStatus.textContent = "Nagrany wokal";
+		dawMicEmpty.style.display = 'none';
+		dawMicBox.style.display = 'block';
 
+		// Wywołujemy naszą logiczną funkcję, która wylicza odcięcie/przesunięcie i rysuje falę
+		syncMicBoxPosition();
+	  } else {
+		dawMicStatus.textContent = "Brak nagrania";
+		dawMicEmpty.style.display = 'block';
+		dawMicBox.style.display = 'none';
+		micOffsetSeconds = 0;
+	  }
+	}
+	/* DRAG & DROP WOKALU W DAW */
+	// Reference do Inputa przesunięcia
+	const micShiftInput = document.getElementById('micShiftInput');
+
+	// Funkcja synchronizująca widok klocka wokalu na ekranie
+	function syncMicBoxPosition() {
+	  if (!recordedAudioPlayer.src || micDuration <= 0) return;
+
+	  const maxDuration = Math.max(beatDuration, micDuration) || 1;
+	  
+	  if (micOffsetSeconds < 0) {
+		// Gdy wokal jest przesunięty w lewo (np. -2s):
+		// Widoczna długość wokalu zmniejsza się o odciętą część
+		const cutSec = Math.abs(micOffsetSeconds);
+		const visibleMicDuration = Math.max(0, micDuration - cutSec);
+		
+		const visiblePercent = (visibleMicDuration / maxDuration) * 100;
+
+		dawMicBox.style.left = `0%`; // Box zostaje przy lewej krawędzi
+		dawMicBox.style.width = `${visiblePercent}%`; // Zmniejsza się szerokość
+	  } else {
+		// Gdy wokal jest przesunięty w prawo (offset dodatni):
+		const micPercent = (micDuration / maxDuration) * 100;
+		const leftPercent = (micOffsetSeconds / maxDuration) * 100;
+
+		dawMicBox.style.left = `${leftPercent}%`;
+		dawMicBox.style.width = `${micPercent}%`;
+	  }
+
+	  // Odświeżamy rysowanie fali w Canvasie z uwzględnieniem odcięcia (micOffsetSeconds)
+	  renderBarWaveform(dawMicCanvas, '#f44336', micAudioBuffer, micOffsetSeconds);
+
+	  // Odświeżenie inputu jeśli użytkownik w nim nie pisze
+	  if (document.activeElement !== micShiftInput) {
+		micShiftInput.value = micOffsetSeconds.toFixed(2);
+	  }
+	}
+
+	/* DRAG & DROP MYSZKĄ */
+	let isDraggingMic = false;
+	let dragStartX = 0;
+	let initialOffsetSec = 0;
+
+	dawMicBox.style.cursor = 'grab';
+
+	dawMicBox.addEventListener('mousedown', (e) => {
+	  if (isDawPlaying) return;
+	  
+	  isDraggingMic = true;
+	  dragStartX = e.clientX;
+	  initialOffsetSec = micOffsetSeconds;
+	  dawMicBox.style.cursor = 'grabbing';
+	  
+	  e.preventDefault(); // Zabezpieczenie przed zaznaczaniem tekstu podczas przeciągania
+	});
+
+	window.addEventListener('mousemove', (e) => {
+	  if (!isDraggingMic) return;
+
+	  // Przelicznik pikseli na sekundy na podstawie aktualnej szerokości paska
+	  const trackContainer = dawMicBox.parentElement;
+	  const trackWidth = trackContainer.clientWidth;
+	  if (trackWidth <= 0) return;
+
+	  const deltaX = e.clientX - dragStartX;
+	  const maxDuration = Math.max(beatDuration, micDuration) || 1;
+	  const deltaSeconds = (deltaX / trackWidth) * maxDuration;
+
+	  // Nowy offset w sekundach
+	  micOffsetSeconds = initialOffsetSec + deltaSeconds;
+
+	  // Synchronizacja widoku i inputa
+	  syncMicBoxPosition();
+	});
+
+	window.addEventListener('mouseup', () => {
+	  if (isDraggingMic) {
+		isDraggingMic = false;
+		dawMicBox.style.cursor = 'grab';
+	  }
+	});
+
+	/* RĘCZNE WPISYWANIE WARTOŚCI W INPUT */
+	micShiftInput.addEventListener('input', () => {
+	  const val = parseFloat(micShiftInput.value);
+	  micOffsetSeconds = isNaN(val) ? 0 : val;
+	  syncMicBoxPosition();
+	});
+
+	micShiftInput.addEventListener('change', () => {
+	  const val = parseFloat(micShiftInput.value);
+	  micOffsetSeconds = isNaN(val) ? 0 : val;
+	  micShiftInput.value = micOffsetSeconds.toFixed(2);
+	  syncMicBoxPosition();
+	});
     /* PRZESUWANIE IGŁY POSTĘPU (PLAYHEAD) */
     function updatePlayheads() {
-      if (!isDawPlaying) {
-        dawPlayheadBeat.style.display = 'none';
-        dawPlayheadMic.style.display = 'none';
-        return;
-      }
+	  if (!isDawPlaying) {
+		dawPlayheadBeat.style.display = 'none';
+		dawPlayheadMic.style.display = 'none';
+		return;
+	  }
 
-      const maxDuration = Math.max(beatDuration, micDuration) || 1;
+	  const maxDuration = Math.max(beatDuration, micDuration + micOffsetSeconds) || 1;
 
-      if (audioPlayer.src && beatDuration > 0) {
-        dawPlayheadBeat.style.display = 'block';
-        const beatProgress = (audioPlayer.currentTime / maxDuration) * 100;
-        dawPlayheadBeat.style.left = `${Math.min(beatProgress, 100)}%`;
-      }
+	  // Igła bitu
+	  if (audioPlayer.src && beatDuration > 0) {
+		dawPlayheadBeat.style.display = 'block';
+		const beatProgress = (audioPlayer.currentTime / maxDuration) * 100;
+		dawPlayheadBeat.style.left = `${Math.min(beatProgress, 100)}%`;
+	  }
 
-      if (recordedAudioPlayer.src && micDuration > 0) {
-        dawPlayheadMic.style.display = 'block';
-        const micProgress = (recordedAudioPlayer.currentTime / maxDuration) * 100;
-        dawPlayheadMic.style.left = `${Math.min(micProgress, 100)}%`;
-      }
+	  // Igła wokalu (bierze pod uwagę offset)
+	  if (recordedAudioPlayer.src && micDuration > 0) {
+		dawPlayheadMic.style.display = 'block';
+		
+		// Całkowity czas wokalu to przesunięcie + aktualny czas odtwarzania
+		const currentMicTime = micOffsetSeconds + (recordedAudioPlayer.paused ? 0 : recordedAudioPlayer.currentTime);
+		const micProgress = (currentMicTime / maxDuration) * 100;
+		
+		dawPlayheadMic.style.left = `${Math.min(micProgress, 100)}%`;
+	  }
 
-      dawAnimFrame = requestAnimationFrame(updatePlayheads);
-    }
+	  dawAnimFrame = requestAnimationFrame(updatePlayheads);
+	}
 
     openDawBtn.addEventListener('click', () => {
       if (isRunning) stop();
@@ -2065,81 +2254,122 @@
       audioWidget.classList.remove('in-daw');
     });
 
-    function stopDawPlayback() {
-      isDawPlaying = false;
-      dawPlayBtn.classList.remove('playing');
-      dawPlayBtn.innerHTML = `<span>PLAY</span>`;
-      
-      if (dawAnimFrame) cancelAnimationFrame(dawAnimFrame);
+    let micTimeoutId = null;
 
-      if (audioPlayer.src) {
-        audioPlayer.pause();
-        audioPlayer.currentTime = 0;
-      }
-      if (recordedAudioPlayer.src) {
-        recordedAudioPlayer.pause();
-        recordedAudioPlayer.currentTime = 0;
-      }
-      updatePlayheads();
-    }
+	function stopDawPlayback() {
+	  isDawPlaying = false;
+	  dawPlayBtn.classList.remove('playing');
+	  dawPlayBtn.innerHTML = `<span>PLAY</span>`;
+	  
+	  if (dawAnimFrame) cancelAnimationFrame(dawAnimFrame);
+	  if (micTimeoutId) clearTimeout(micTimeoutId); // Anulujemy zaplanowany wokal
 
-    dawPlayBtn.addEventListener('click', () => {
-      if (isDawPlaying) {
-        stopDawPlayback();
-      } else {
-        if (!audioPlayer.src && !recordedAudioPlayer.src) return;
+	  if (audioPlayer.src) {
+		audioPlayer.pause();
+		audioPlayer.currentTime = 0;
+	  }
+	  if (recordedAudioPlayer.src) {
+		recordedAudioPlayer.pause();
+		recordedAudioPlayer.currentTime = 0;
+	  }
+	  updatePlayheads();
+	}
 
-        isDawPlaying = true;
-        dawPlayBtn.classList.add('playing');
-        dawPlayBtn.innerHTML = `<span>PAUZA</span>`;
+	dawPlayBtn.addEventListener('click', () => {
+	  if (isDawPlaying) {
+		stopDawPlayback();
+	  } else {
+		if (!audioPlayer.src && !recordedAudioPlayer.src) return;
 
-        if (audioPlayer.src) {
-          audioPlayer.currentTime = 0;
-          audioPlayer.play();
-        }
+		isDawPlaying = true;
+		dawPlayBtn.classList.add('playing');
+		dawPlayBtn.innerHTML = `<span>PAUZA</span>`;
 
-        if (recordedAudioPlayer.src) {
-          recordedAudioPlayer.currentTime = 0;
-          recordedAudioPlayer.play();
-        }
+		// 1. Odtwarzamy bit od razu
+		if (audioPlayer.src) {
+		  audioPlayer.currentTime = 0;
+		  audioPlayer.play();
+		}
 
-        updatePlayheads();
+		if (recordedAudioPlayer.src) {
+		  if (micOffsetSeconds > 0) {
+			// Przesunięcie w prawo – czekamy z włączeniem
+			recordedAudioPlayer.currentTime = 0;
+			micTimeoutId = setTimeout(() => {
+			  if (isDawPlaying) recordedAudioPlayer.play();
+			}, micOffsetSeconds * 1000);
+		  } else if (micOffsetSeconds < 0) {
+			// Przesunięcie w lewo – startujemy OD RAZU, ale odcięty początek!
+			const startFrom = Math.abs(micOffsetSeconds);
+			if (startFrom < micDuration) {
+			  recordedAudioPlayer.currentTime = startFrom;
+			  recordedAudioPlayer.play();
+			}
+		  } else {
+			// Idealnie równo z bitem
+			recordedAudioPlayer.currentTime = 0;
+			recordedAudioPlayer.play();
+		  }
+		}
 
-        recordedAudioPlayer.onended = () => {
-          if (!audioPlayer.src || audioPlayer.paused) stopDawPlayback();
-        };
+		updatePlayheads();
 
-        audioPlayer.onended = () => {
-          if (!recordedAudioPlayer.src || recordedAudioPlayer.paused) stopDawPlayback();
-        };
-      }
-    });
+		// Reakcja na zakończenie ścieżek
+		const checkEnd = () => {
+		  const beatEnded = !audioPlayer.src || audioPlayer.ended || audioPlayer.paused;
+		  const micEnded = !recordedAudioPlayer.src || recordedAudioPlayer.ended || recordedAudioPlayer.paused;
+		  
+		  // Stopujemy dopiero gdy najdłuższa ścieżka się skończy
+		  if (beatEnded && micEnded) {
+			stopDawPlayback();
+		  }
+		};
 
-    audioInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      audioPlayer.src = URL.createObjectURL(file);
-      audioPlayer.volume = volumeSlider.value / 100;
-      trackName.textContent = file.name;
-      audioUploadLabel.style.display = 'none';
-      audioPanel.style.display = 'flex';
+		audioPlayer.onended = checkEnd;
+		recordedAudioPlayer.onended = checkEnd;
+	  }
+	});
 
-      audioPlayer.onloadedmetadata = () => {
-        beatDuration = audioPlayer.duration || 0;
-        updateDawWaveforms();
-      };
-    });
+    audioInput.addEventListener('change', async (e) => {
+	  const file = e.target.files[0];
+	  if (!file) return;
+
+	  audioPlayer.src = URL.createObjectURL(file);
+	  audioPlayer.volume = volumeSlider.value / 100;
+	  trackName.textContent = file.name;
+	  audioUploadLabel.style.display = 'none';
+	  audioPanel.style.display = 'flex';
+
+	  // --- DEKODOWANIE DANYCH DLA PRAWDZIWEGO WAVEFORMU ---
+	  try {
+		const arrayBuffer = await file.arrayBuffer();
+		const tempCtx = new (window.AudioContext || window.webkitAudioContext)();
+		beatAudioBuffer = await tempCtx.decodeAudioData(arrayBuffer);
+		beatDuration = beatAudioBuffer.duration;
+		
+		tempCtx.close();
+	  } catch (err) {
+		console.error("Błąd dekodowania bitu:", err);
+		beatAudioBuffer = null;
+	  }
+
+	  audioPlayer.onloadedmetadata = () => {
+		beatDuration = audioPlayer.duration || 0;
+		updateDawWaveforms();
+	  };
+	});
 
     deleteAudioBtn.addEventListener('click', () => {
-      if (audioTimeoutId) clearTimeout(audioTimeoutId);
-      audioPlayer.pause();
-      audioPlayer.src = "";
-      beatDuration = 0;
-      audioInput.value = "";
-      audioPanel.style.display = 'none';
-      audioUploadLabel.style.display = 'block';
-      updateDawWaveforms();
-    });
+	  if (audioTimeoutId) clearTimeout(audioTimeoutId);
+	  audioPlayer.pause();
+	  audioPlayer.src = "";
+	  beatAudioBuffer = null;
+	  beatDuration = 0;
+	  audioInput.value = "";
+	  audioPanel.style.display = 'none';
+	  audioUploadLabel.style.display = 'block';
+	  updateDawWaveforms();
+	});
 
     volumeSlider.addEventListener('input', () => {
       audioPlayer.volume = volumeSlider.value / 100;
@@ -3681,24 +3911,33 @@
 	  triggerDownload(audioPlayer.src, trackName.textContent || "bit.mp3");
 	});
 
-	// Pobieranie Samego Wokalu Z Efektami
+	// Pobieranie Samego Wokalu Z Efektami (Z UWZGLĘDNIENIEM PRZESUNIĘCIA!)
 	document.getElementById('dlVocalsBtn').addEventListener('click', async () => {
-	  if (!recordedAudioPlayer.src) {
+	  if (!micAudioBuffer && !recordedAudioPlayer.src) {
 		alert("Brak nagranego wokalu!");
 		return;
 	  }
 
 	  try {
-		const resp = await fetch(recordedAudioPlayer.src);
-		const buf = await resp.arrayBuffer();
-		
-		const tempCtx = new (window.AudioContext || window.webkitAudioContext)();
-		const audioBuf = await tempCtx.decodeAudioData(buf);
+		// Pobieramy bufor wokalu
+		let audioBuf = micAudioBuffer;
+		if (!audioBuf) {
+		  const resp = await fetch(recordedAudioPlayer.src);
+		  const buf = await resp.arrayBuffer();
+		  const tempCtx = new (window.AudioContext || window.webkitAudioContext)();
+		  audioBuf = await tempCtx.decodeAudioData(buf);
+		}
 
+		// Wyliczamy całkowitą długość ścieżki po przesunięciu
+		const totalDuration = micOffsetSeconds > 0 
+		  ? audioBuf.duration + micOffsetSeconds 
+		  : Math.max(0.1, audioBuf.duration + micOffsetSeconds);
+
+		const sampleRate = audioBuf.sampleRate || 44100;
 		const offlineCtx = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(
 		  audioBuf.numberOfChannels,
-		  audioBuf.length,
-		  audioBuf.sampleRate
+		  Math.ceil(sampleRate * totalDuration),
+		  sampleRate
 		);
 
 		const src = offlineCtx.createBufferSource();
@@ -3711,9 +3950,15 @@
 		applyVocalEffects(offlineCtx, src, gainNode);
 		gainNode.connect(offlineCtx.destination);
 
-		src.start(0);
+		// LOGIKA STARTU Z OFFSETEM
+		if (micOffsetSeconds >= 0) {
+		  src.start(micOffsetSeconds); // Wokal startuje po X sekundach ciszy
+		} else {
+		  const cutFrom = Math.abs(micOffsetSeconds); // Odcinamy początek wokalu
+		  src.start(0, cutFrom);
+		}
+
 		const renderedBuffer = await offlineCtx.startRendering();
-		
 		const wavBlob = audioBufferToWav(renderedBuffer);
 		const wavUrl = URL.createObjectURL(wavBlob);
 		triggerDownload(wavUrl, "wokal_z_efektami.wav");
@@ -3724,7 +3969,7 @@
 	  }
 	});
 
-	// Pobieranie Miksu
+	// Pobieranie Całego Miksu (BIT + WOKAL Z PRZESUNIĘCIEM)
 	document.getElementById('dlMixBtn').addEventListener('click', async () => {
 	  if (!audioPlayer.src && !recordedAudioPlayer.src) {
 		alert("Brak ścieżek do miksu!");
@@ -3732,39 +3977,66 @@
 	  }
 
 	  try {
-		const maxDur = Math.max(beatDuration || 0, micDuration || 0);
-		if (maxDur === 0) return;
+		// 1. Wyliczamy prawdziwą całkowitą długość całego utworu
+		const beatDur = beatAudioBuffer ? beatAudioBuffer.duration : (beatDuration || 0);
+		const micDur = micAudioBuffer ? micAudioBuffer.duration : (micDuration || 0);
+		
+		const micEndSec = micDur > 0 ? (micOffsetSeconds + micDur) : 0;
+		const maxDur = Math.max(beatDur, micEndSec);
+		
+		if (maxDur <= 0) return;
 
 		const sampleRate = 44100;
-		const offlineCtx = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(2, sampleRate * maxDur, sampleRate);
+		const offlineCtx = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(
+		  2, 
+		  Math.ceil(sampleRate * maxDur), 
+		  sampleRate
+		);
 
+		// 2. RENDERING BITU
 		if (audioPlayer.src) {
-		  const resp = await fetch(audioPlayer.src);
-		  const buf = await resp.arrayBuffer();
-		  const audioBuf = await offlineCtx.decodeAudioData(buf);
-		  const src = offlineCtx.createBufferSource();
-		  const gainNode = offlineCtx.createGain();
+		  let bBuf = beatAudioBuffer;
+		  if (!bBuf) {
+			const resp = await fetch(audioPlayer.src);
+			const buf = await resp.arrayBuffer();
+			bBuf = await offlineCtx.decodeAudioData(buf);
+		  }
+
+		  const srcBeat = offlineCtx.createBufferSource();
+		  const gainBeat = offlineCtx.createGain();
 		  
-		  gainNode.gain.value = dbToLinear(parseFloat(beatDbSlider ? beatDbSlider.value : 0));
-		  src.buffer = audioBuf;
-		  src.connect(gainNode);
-		  gainNode.connect(offlineCtx.destination);
-		  src.start(0);
+		  gainBeat.gain.value = dbToLinear(parseFloat(beatDbSlider ? beatDbSlider.value : 0));
+		  srcBeat.buffer = bBuf;
+		  srcBeat.connect(gainBeat);
+		  gainBeat.connect(offlineCtx.destination);
+		  srcBeat.start(0); // Bit idzie od początku
 		}
 
+		// 3. RENDERING WOKALU (Z PRECYZYJNYM PRZESUNIĘCIEM)
 		if (recordedAudioPlayer.src) {
-		  const resp = await fetch(recordedAudioPlayer.src);
-		  const buf = await resp.arrayBuffer();
-		  const audioBuf = await offlineCtx.decodeAudioData(buf);
-		  const src = offlineCtx.createBufferSource();
-		  const gainNode = offlineCtx.createGain();
+		  let mBuf = micAudioBuffer;
+		  if (!mBuf) {
+			const resp = await fetch(recordedAudioPlayer.src);
+			const buf = await resp.arrayBuffer();
+			mBuf = await offlineCtx.decodeAudioData(buf);
+		  }
 
-		  gainNode.gain.value = dbToLinear(parseFloat(micDbSlider ? micDbSlider.value : 0));
-		  src.buffer = audioBuf;
+		  const srcMic = offlineCtx.createBufferSource();
+		  const gainMic = offlineCtx.createGain();
 
-		  applyVocalEffects(offlineCtx, src, gainNode);
-		  gainNode.connect(offlineCtx.destination);
-		  src.start(0);
+		  gainMic.gain.value = dbToLinear(parseFloat(micDbSlider ? micDbSlider.value : 0));
+		  srcMic.buffer = mBuf;
+
+		  applyVocalEffects(offlineCtx, srcMic, gainMic);
+		  gainMic.connect(offlineCtx.destination);
+
+		  // APLIKOWANIE MIEJSCA STARTU WOKALU W MIKSIE
+		  if (micOffsetSeconds >= 0) {
+			srcMic.start(micOffsetSeconds); // Startuje po czasie micOffsetSeconds
+		  } else {
+			const cutFrom = Math.abs(micOffsetSeconds); // Startuje w 0s, ale obcina początek
+			srcMic.start(0, cutFrom);
+		  }
 		}
 
 		const renderedBuffer = await offlineCtx.startRendering();
@@ -3778,7 +4050,7 @@
 	  }
 	});
 
-	// Konwerter AudioBuffer -> WAV Blob
+	// Konwerter AudioBuffer -> WAV Blob (Zostaje bez zmian!)
 	function audioBufferToWav(buffer) {
 	  let numOfChan = buffer.numberOfChannels,
 		  len = buffer.length * numOfChan * 2 + 44,
