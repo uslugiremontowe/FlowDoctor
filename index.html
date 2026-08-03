@@ -1460,9 +1460,9 @@
           <div class="daw-volume-control">
             <div class="daw-vol-label">
               <span>VOL:</span>
-              <span id="beatDbVal">0.0 dB</span>
+              <span id="beatDbVal">-6.0 dB</span>
             </div>
-            <input type="range" class="daw-volume-slider" id="beatDbSlider" min="-60" max="6" step="0.5" value="0">
+            <input type="range" class="daw-volume-slider" id="beatDbSlider" min="-60" max="6" step="0.5" value="-6">
           </div>
         </div>
 
@@ -1484,9 +1484,9 @@
           <div class="daw-volume-control">
             <div class="daw-vol-label">
               <span>VOL:</span>
-              <span id="micDbVal">0.0 dB</span>
+              <span id="micDbVal">-6.0 dB</span>
             </div>
-            <input type="range" class="daw-volume-slider" id="micDbSlider" min="-60" max="6" step="0.5" value="0" style="accent-color: #f44336;">
+            <input type="range" class="daw-volume-slider" id="micDbSlider" min="-60" max="6" step="0.5" value="-6" style="accent-color: #f44336;">
           </div>
 			<div style="margin-top: 6px; display: flex; align-items: center; justify-content: space-between;">
 			  <span class="shift-label">Shift:</span>
@@ -1957,15 +1957,27 @@
 
     async function startRecording() {
       try {
-        micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        micStream = await navigator.mediaDevices.getUserMedia({ audio: {
+			echoCancellation: false,      // Wyłącza tłumienie echa (znosi kartonowy dźwięk)
+			noiseSuppression: false,      // Wyłącza odszumianie (przywraca górne pasmo/detale)
+			autoGainControl: false,       // Wyłącza automatyczne ciszenie/głośnienie
+			channelCount: 1,              // Mono wystarczy dla wokalu
+			sampleRate: 48000,            // Wysoka jakość próbkowania (lub 44100)
+			sampleSize: 16
+		  }});
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
         micAnalyser = audioCtx.createAnalyser();
         micAnalyser.fftSize = 64;
         micSourceNode = audioCtx.createMediaStreamSource(micStream);
         micSourceNode.connect(micAnalyser);
+		
+		const options = {
+		  mimeType: 'audio/webm;codecs=opus',
+		  audioBitsPerSecond: 256000 
+		};
 
-        mediaRecorder = new MediaRecorder(micStream);
+        mediaRecorder = new MediaRecorder(micStream, options);
         recordedChunks = [];
 
         mediaRecorder.ondataavailable = (e) => {
@@ -2335,7 +2347,7 @@
 	  if (!file) return;
 
 	  audioPlayer.src = URL.createObjectURL(file);
-	  audioPlayer.volume = volumeSlider.value / 100;
+	  audioPlayer.volume = typeof dbToLinear === 'function' ? dbToLinear(-6) : 0.501;
 	  trackName.textContent = file.name;
 	  audioUploadLabel.style.display = 'none';
 	  audioPanel.style.display = 'flex';
@@ -2600,23 +2612,29 @@
     }
 
     resetBtn.addEventListener('click', () => {
-      if (isRunning) return;
+	  if (isRunning) return;
 
-      bpmInput.value = 140;
-      flowMultiplier = 1.0;
-      flowButtons.forEach(b => b.classList.remove('active'));
-      document.querySelector('.btn-flow[data-multiplier="1"]').classList.add('active');
+	  bpmInput.value = 140;
+	  flowMultiplier = 1.0;
+	  flowButtons.forEach(b => b.classList.remove('active'));
+	  document.querySelector('.btn-flow[data-multiplier="1"]').classList.add('active');
 
-      subdivSelect.value = "4";
-      colsPerRow = 4;
-      freeSpaceSelect.value = "2";
+	  subdivSelect.value = "4";
+	  colsPerRow = 4;
+	  freeSpaceSelect.value = "2";
 
-      shiftSlider.value = "0.0";
-      shiftVal.textContent = "0.0s";
+	  shiftSlider.value = "0.0";
+	  shiftVal.textContent = "0.0s";
 
-      updateBpmDisplay();
-      createGrid();
-    });
+	  // Domyślny zapas (headroom) -6 dB dla zapobiegania przesterom
+	  if (beatDbSlider) beatDbSlider.value = "-6";
+	  if (micDbSlider) micDbSlider.value = "-6";
+	  if (beatDbVal) beatDbVal.textContent = "-6.0 dB";
+	  if (micDbVal) micDbVal.textContent = "-6.0 dB";
+
+	  updateBpmDisplay();
+	  createGrid();
+	});
 
     startBtn.addEventListener('click', () => {
       if (isRunning) stop();
