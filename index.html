@@ -746,81 +746,569 @@
 	.download-dropdown.active .download-menu {
 	  display: block;
 	}
+	/* ==========================================
+	   SEKCJA FX RACK (ORYGINALNY UKŁAD 4-KOLUMNOWY)
+	   ========================================== */
 
-  .fx-section {
-    margin-top: 35px;
-    padding: 0 10px;
-  }
+	.fx-section {
+	  margin-top: 35px;
+	  padding: 0 10px;
+	}
 
-  .fx-title {
-    font-size: 0.85rem;
-    color: #888;
-    letter-spacing: 1.5px;
-    margin-bottom: 12px;
-    font-weight: bold;
-  }
+	.fx-title {
+	  font-size: 0.85rem;
+	  color: #888;
+	  letter-spacing: 1.5px;
+	  margin-bottom: 12px;
+	  font-weight: bold;
+	}
 
-  .fx-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-  }
+	.fx-grid {
+	  display: grid;
+	  grid-template-columns: repeat(4, 1fr);
+	  gap: 16px;
+	}
 
-  .fx-card {
-    background-color: #1a1a1a;
-    border: 1px solid #2a2a2a;
-    border-radius: 8px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: 130px;
-    transition: all 0.2s ease;
-    cursor: pointer;
-  }
+	.fx-card {
+	  background-color: #1a1a1a;
+	  border: 1px solid #2a2a2a;
+	  border-radius: 8px;
+	  padding: 16px;
+	  display: flex;
+	  flex-direction: column;
+	  justify-content: space-between;
+	  min-height: 130px;
+	  transition: all 0.2s ease;
+	  cursor: pointer;
+	}
 
-  .fx-card:hover {
-    border-color: #444;
-    transform: translateY(-2px);
-  }
+	.fx-card:hover {
+	  border-color: #444;
+	  transform: translateY(-2px);
+	}
 
-  .fx-card.active {
-    border-color: #4caf50;
-    box-shadow: 0 0 10px rgba(76, 175, 80, 0.15);
-  }
+	.fx-card.active {
+	  border-color: #4caf50;
+	  box-shadow: 0 0 10px rgba(76, 175, 80, 0.15);
+	}
 
-  .fx-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+	.fx-card-header {
+	  display: flex;
+	  justify-content: space-between;
+	  align-items: center;
+	}
 
-  .fx-card-name {
-    font-size: 0.95rem;
-    font-weight: bold;
-    color: #fff;
-  }
+	.fx-card-name {
+	  font-size: 0.95rem;
+	  font-weight: bold;
+	  color: #fff;
+	}
 
-  .fx-toggle-btn {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background-color: #444;
-    box-shadow: 0 0 4px #000 inset;
-    transition: all 0.2s;
-  }
+	.fx-toggle-btn {
+	  width: 12px;
+	  height: 12px;
+	  border-radius: 50%;
+	  background-color: #444;
+	  box-shadow: 0 0 4px #000 inset;
+	  transition: all 0.2s;
+	}
 
-  .fx-card.active .fx-toggle-btn {
-    background-color: #4caf50;
-    box-shadow: 0 0 8px #4caf50;
-  }
+	.fx-card.active .fx-toggle-btn {
+	  background-color: #4caf50;
+	  box-shadow: 0 0 8px #4caf50;
+	}
 
-  .fx-card-body {
-    font-size: 0.75rem;
-    color: #666;
-    text-align: center;
-    padding: 10px 0;
-  }
+	.fx-card-body {
+	  font-size: 0.75rem;
+	  color: #666;
+	  text-align: center;
+	  padding: 10px 0;
+	}
+
+	/* AUTOTUNE */
+	.at-controls {
+	  display: flex;
+	  flex-direction: column;
+	  gap: 10px;
+	  margin-top: 10px;
+	}
+
+	.at-scale-selects {
+	  display: flex;
+	  gap: 4px;
+	}
+
+	.at-select {
+	  background-color: #121212;
+	  color: #4caf50;
+	  border: 1px solid #333;
+	  border-radius: 4px;
+	  padding: 4px 2px;
+	  font-size: 0.75rem;
+	  font-weight: bold;
+	  cursor: pointer;
+	  flex: 1;
+	  outline: none;
+	}
+
+	.at-select:focus {
+	  border-color: #4caf50;
+	}
+
+	.at-speed-container {
+	  display: flex;
+	  flex-direction: column;
+	  gap: 4px;
+	}
+
+	.at-speed-label {
+	  display: flex;
+	  justify-content: space-between;
+	  font-size: 0.65rem;
+	  color: #888;
+	  font-weight: bold;
+	}
+
+	.at-slider {
+	  width: 100%;
+	  accent-color: #4caf50;
+	  height: 4px;
+	  cursor: pointer;
+	}
+
+	/* EQUALIZER (SPAN 2) */
+	.eq-card {
+	  grid-column: span 2;
+	}
+
+	.eq-container {
+	  display: flex;
+	  flex-direction: column;
+	  align-items: center;
+	  gap: 6px;
+	  margin-top: 10px;
+	}
+
+	#eqCanvas {
+	  background-color: #111;
+	  border: 1px solid #333;
+	  border-radius: 6px;
+	  cursor: crosshair;
+	  width: 100%;
+	  height: 120px;
+	}
+
+	.eq-info-bar {
+	  font-size: 0.68rem;
+	  color: #4caf50;
+	  font-family: monospace;
+	  height: 14px;
+	}
+
+	/* SATURACJA */
+	#fxSaturation {
+	  position: relative;
+	  border: 1px solid #2a2a2a;
+	  background: #1a1a1a;
+	  border-radius: 8px;
+	  overflow: hidden;
+	  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+	}
+
+	#fxSaturation.active {
+	  border-color: #ff9800;
+	  box-shadow: 0 0 10px rgba(255, 152, 0, 0.15);
+	}
+
+	#fxSaturation.active .fx-status-dot {
+	  background: #ff9800;
+	  box-shadow: 0 0 8px #ff9800;
+	}
+
+	#fxSaturation .fx-body {
+	  padding: 14px;
+	  display: flex;
+	  flex-direction: column;
+	  gap: 12px;
+	}
+
+	#fxSaturation .fx-header {
+	  display: flex;
+	  justify-content: space-between;
+	  align-items: center;
+	  padding: 10px 14px;
+	  border-radius: 8px;
+	  background: #090b0e;
+	  cursor: pointer;
+	  user-select: none;
+	  border-bottom: 1px solid #1f242d;
+	}
+
+	#fxSaturation .fx-title {
+	  display: flex;
+	  align-items: center;
+	  gap: 8px;
+	}
+
+	#fxSaturation .fx-title h3 {
+	  margin: 0;
+	  font-size: 13px;
+	  color: #e1e6f0;
+	  font-weight: 600;
+	}
+
+	#fxSaturation .fx-status-dot {
+	  width: 8px;
+	  height: 8px;
+	  border-radius: 50%;
+	  background: #3f4654;
+	  transition: all 0.2s ease;
+	}
+
+	#fxSaturation .fx-toggle-text {
+	  font-size: 10px;
+	  font-weight: 800;
+	  color: #555;
+	}
+
+	#fxSaturation.active .fx-toggle-text {
+	  color: #ff9800;
+	}
+
+	#satTypeSelector {
+	  display: flex;
+	  background: #090b0e;
+	  padding: 3px;
+	  border-radius: 6px;
+	  gap: 4px;
+	  border: 1px solid #1f242d;
+	}
+
+	#satTypeSelector .sat-type-btn {
+	  flex: 1;
+	  background: transparent;
+	  border: none;
+	  color: #777;
+	  padding: 6px 10px;
+	  font-size: 11px;
+	  font-weight: 700;
+	  border-radius: 4px;
+	  cursor: pointer;
+	  transition: all 0.2s ease;
+	}
+
+	#satTypeSelector .sat-type-btn.active {
+	  background: #1c212b;
+	  color: #ff9800;
+	  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+	}
+
+	#satControlsGrid {
+	  display: flex;
+	  flex-direction: column;
+	  gap: 10px;
+	}
+
+	.sat-control-group {
+	  display: flex;
+	  flex-direction: column;
+	  gap: 4px;
+	}
+
+	.sat-label-row {
+	  display: flex;
+	  justify-content: space-between;
+	  align-items: center;
+	}
+
+	.sat-label-row label {
+	  font-size: 10px;
+	  font-weight: 800;
+	  color: #888;
+	  letter-spacing: 0.5px;
+	}
+
+	.sat-val {
+	  font-size: 10px;
+	  font-weight: bold;
+	  color: #ff9800;
+	  font-family: monospace;
+	}
+
+	.sat-slider {
+	  -webkit-appearance: none;
+	  appearance: none;
+	  width: 100%;
+	  height: 6px;
+	  background: #080a0d;
+	  border-radius: 3px;
+	  outline: none;
+	  border: 1px solid #1a1e26;
+	}
+
+	.sat-slider::-webkit-slider-thumb {
+	  -webkit-appearance: none;
+	  appearance: none;
+	  width: 14px;
+	  height: 14px;
+	  border-radius: 50%;
+	  background: #ff9800;
+	  cursor: pointer;
+	  box-shadow: 0 0 6px rgba(255, 152, 0, 0.6);
+	  transition: transform 0.1s ease;
+	}
+
+	.sat-slider::-moz-range-thumb {
+	  width: 14px;
+	  height: 14px;
+	  border-radius: 50%;
+	  background: #ff9800;
+	  cursor: pointer;
+	  border: none;
+	  box-shadow: 0 0 6px rgba(255, 152, 0, 0.6);
+	}
+
+	.sat-slider::-webkit-slider-thumb:hover {
+	  transform: scale(1.15);
+	}
+
+
+	/* ==========================================
+   REVERB - Z KROPKĄ I PODŚWIETLENIEM (ACTIVE)
+   ========================================== */
+
+	#fxReverb {
+	  grid-column: 2 / span 2 !important; 
+	  background: #1a1a1a;
+	  border: 1px solid #2a2a2a;
+	  border-radius: 8px;
+	  min-height: 0 !important;
+	  padding: 12px 16px !important;
+	  display: flex;
+	  flex-direction: column;
+	  justify-content: flex-start;
+	  transition: all 0.2s ease;
+	  cursor: pointer;
+	}
+
+	/* Hover na całym kafelku */
+	#fxReverb:hover {
+	  border-color: #444;
+	  transform: translateY(-2px);
+	}
+
+	/* PODŚWIETLENIE PO WŁĄCZNIU (STAN ACTIVE) */
+	#fxReverb.active {
+	  border-color: #7c4dff !important;
+	  box-shadow: 0 0 10px rgba(124, 77, 255, 0.25) !important;
+	}
+
+	/* Świecąca fioletowa kropka po włączeniu */
+	#fxReverb.active .fx-toggle-btn {
+	  background-color: #7c4dff !important;
+	  box-shadow: 0 0 8px #7c4dff !important;
+	}
+
+	#fxReverb .fx-body {
+	  padding: 6px 0 0 0 !important;
+	  display: flex;
+	  flex-direction: column;
+	}
+
+	.rev-controls-grid {
+	  display: flex !important;
+	  justify-content: center;
+	  align-items: center;
+	  gap: 28px;
+	  margin-top: 4px;
+	}
+
+	.rev-knob-group {
+	  display: flex;
+	  flex-direction: column;
+	  align-items: center;
+	  gap: 3px;
+	}
+
+	.rev-knob-group label {
+	  font-size: 8px;
+	  font-weight: 800;
+	  color: #888;
+	  letter-spacing: 0.5px;
+	  text-transform: uppercase;
+	}
+
+	.rev-knob-container {
+	  position: relative;
+	  width: 34px;
+	  height: 34px;
+	  background: #080a0d;
+	  border: 2px solid #2a2a2a;
+	  border-radius: 50%;
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	}
+
+	.rev-knob-input {
+	  width: 100%;
+	  height: 100%;
+	  opacity: 0;
+	  position: absolute;
+	  cursor: ns-resize;
+	  z-index: 2;
+	}
+
+	.rev-knob-indicator {
+	  width: 2px;
+	  height: 11px;
+	  background: #7c4dff;
+	  border-radius: 2px;
+	  position: absolute;
+	  top: 3px;
+	  transform-origin: bottom center;
+	  box-shadow: 0 0 6px rgba(124, 77, 255, 0.8);
+	}
+
+	.rev-val {
+	  font-size: 9px;
+	  font-weight: bold;
+	  color: #7c4dff;
+	  font-family: monospace;
+	}
+
+
+	/* ==========================================
+	   AUTOTUNE (SPINE Z KODEM BASE)
+	   ========================================== */
+
+	#fxAutoTune.active {
+	  border-color: #00e676;
+	  box-shadow: 0 0 10px rgba(0, 230, 118, 0.2);
+	}
+
+	#fxAutoTune.active .fx-status-dot {
+	  background: #00e676;
+	  box-shadow: 0 0 8px #00e676;
+	}
+
+	#fxAutoTune .fx-body {
+	  padding: 14px;
+	  display: flex;
+	  flex-direction: column;
+	  gap: 12px;
+	}
+
+	.at-display {
+	  background: #0a0d12;
+	  border: 1px solid #1a222d;
+	  border-radius: 6px;
+	  padding: 10px;
+	  display: flex;
+	  flex-direction: column;
+	  align-items: center;
+	  justify-content: center;
+	  position: relative;
+	  min-height: 70px;
+	}
+
+	.at-key-badge {
+	  position: absolute;
+	  top: 6px;
+	  left: 8px;
+	  font-size: 9px;
+	  font-weight: 800;
+	  color: #00e676;
+	  letter-spacing: 1px;
+	}
+
+	.at-pitch-tracker {
+	  display: flex;
+	  flex-direction: column;
+	  align-items: center;
+	  gap: 2px;
+	}
+
+	.at-target-note {
+	  font-size: 24px;
+	  font-weight: 900;
+	  color: #ffffff;
+	  font-family: monospace;
+	  text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+	}
+
+	.at-pitch-status {
+	  font-size: 9px;
+	  font-weight: 700;
+	  color: #555;
+	  letter-spacing: 1px;
+	}
+
+	.at-select-row {
+	  display: grid;
+	  grid-template-columns: 1fr 1fr;
+	  gap: 8px;
+	}
+
+	.at-select-group {
+	  display: flex;
+	  flex-direction: column;
+	  gap: 4px;
+	}
+
+	.at-select-group label,
+	.at-label-row label {
+	  font-size: 10px;
+	  font-weight: 800;
+	  color: #888;
+	  letter-spacing: 0.5px;
+	}
+
+	.at-control-group {
+	  display: flex;
+	  flex-direction: column;
+	  gap: 4px;
+	}
+
+	.at-label-row {
+	  display: flex;
+	  justify-content: space-between;
+	  align-items: center;
+	}
+
+	.at-val {
+	  font-size: 10px;
+	  font-weight: bold;
+	  color: #00e676;
+	  font-family: monospace;
+	}
+
+	.at-slider {
+	  -webkit-appearance: none;
+	  appearance: none;
+	  width: 100%;
+	  height: 6px;
+	  background: #080a0d;
+	  border-radius: 3px;
+	  outline: none;
+	  border: 1px solid #1a1e26;
+	}
+
+	.at-slider::-webkit-slider-thumb {
+	  -webkit-appearance: none;
+	  appearance: none;
+	  width: 14px;
+	  height: 14px;
+	  border-radius: 50%;
+	  background: #00e676;
+	  cursor: pointer;
+	  box-shadow: 0 0 6px rgba(0, 230, 118, 0.6);
+	  transition: transform 0.1s ease;
+	}
+
+	.at-slider::-webkit-slider-thumb:hover {
+	  transform: scale(1.15);
+	}
   </style>
 </head>
 <body>
@@ -998,41 +1486,183 @@
       <div class="fx-title">WTYCZKI WOKALOWE (FX RACK)</div>
       <div class="fx-grid">
         
-        <!-- AutoTune -->
-        <div class="fx-card" id="fxAutoTune" onclick="this.classList.toggle('active')">
-          <div class="fx-card-header">
-            <span class="fx-card-name">AutoTune</span>
-            <div class="fx-toggle-btn"></div>
-          </div>
-          <div class="fx-card-body">Korekta tonacji</div>
-        </div>
+        <!-- KARTA EFEKTU: AUTOTUNE -->
+		<div class="fx-card" id="fxAutoTune">
+		  <div class="fx-header" id="fxAutoTuneHeader">
+			<div class="fx-title">
+			  <h3>AutoTune</h3>
+			</div>
+			<span class="fx-status-dot"></span>
+		  </div>
+
+		  <div class="fx-body">
+			<!-- CYFROWY WYŚWIETLACZ W ŚRODKU (Wydzielona przestrzeń) -->
+			<div class="at-display">
+			  <div class="at-key-badge" id="atCurrentKeyDisplay">C MAJOR</div>
+			  <div class="at-pitch-tracker">
+				<span class="at-target-note" id="atTargetNoteDisplay">--</span>
+				<span class="at-pitch-status" id="atPitchStatus">READY</span>
+			  </div>
+			</div>
+
+			<!-- SELEKTORY TONACJI -->
+			<div class="at-select-row">
+			  <div class="at-select-group">
+				<label>NUTA</label>
+				<select id="atNoteSelect" class="at-select">
+				  <option value="C">C</option>
+				  <option value="C#">C# / Db</option>
+				  <option value="D">D</option>
+				  <option value="D#">D# / Eb</option>
+				  <option value="E">E</option>
+				  <option value="F">F</option>
+				  <option value="F#">F# / Gb</option>
+				  <option value="G">G</option>
+				  <option value="G#">G# / Ab</option>
+				  <option value="A">A</option>
+				  <option value="A#">A# / Bb</option>
+				  <option value="B">B</option>
+				</select>
+			  </div>
+
+			  <div class="at-select-group">
+				<label>SKALA</label>
+				<select id="atModeSelect" class="at-select">
+				  <option value="major">Major (Dur)</option>
+				  <option value="minor">Minor (Moll)</option>
+				  <option value="chromatic">Chromatic (Wszystkie)</option>
+				</select>
+			  </div>
+			</div>
+
+			<!-- SUWAK SZYBKOŚCI (RETUNE SPEED) -->
+			<div class="at-control-group">
+			  <div class="at-label-row">
+				<label for="atSpeedSlider">RETUNE SPEED</label>
+				<span class="at-val" id="atSpeedVal">20 ms</span>
+			  </div>
+			  <input type="range" id="atSpeedSlider" min="0" max="100" step="1" value="20" class="at-slider">
+			</div>
+		  </div>
+		</div>
 
         <!-- Equalizer -->
-        <div class="fx-card" id="fxEqualizer" onclick="this.classList.toggle('active')">
-          <div class="fx-card-header">
-            <span class="fx-card-name">Equalizer</span>
-            <div class="fx-toggle-btn"></div>
-          </div>
-          <div class="fx-card-body">Korekcja barwy</div>
-        </div>
+        <!-- MIEJSCE: Zamień stary blok Equalizer w .fx-grid tym kodem -->
+		<div class="fx-card eq-card" id="fxEqualizer">
+		  <div class="fx-card-header" id="fxEqHeader">
+			<span class="fx-card-name">Equalizer (4-Band)</span>
+			<div class="fx-toggle-btn" id="eqToggleBtn"></div>
+		  </div>
+		  
+		  <div class="eq-container">
+			<canvas id="eqCanvas" width="280" height="120"></canvas>
+			<div class="eq-info-bar">
+			  <span id="eqActiveNodeInfo">Kliknij i przeciągaj kropki 1-4</span>
+			</div>
+		  </div>
+		</div>
 
         <!-- Saturation -->
-        <div class="fx-card" id="fxSaturation" onclick="this.classList.toggle('active')">
-          <div class="fx-card-header">
-            <span class="fx-card-name">Saturation</span>
-            <div class="fx-toggle-btn"></div>
-          </div>
-          <div class="fx-card-body">Ciepo i nasycenie</div>
-        </div>
+		<div class="fx-card" id="fxSaturation">
+		  <div class="fx-header" id="fxSaturationHeader">
+			<div class="fx-title">
+			  <span class="fx-status-dot"></span>
+			  <h3>Saturacja / Nasycenie</h3>
+			</div>
+			<span class="fx-toggle-text">OFF</span>
+		  </div>
+
+		  <div class="fx-body">
+			<!-- Przełącznik Typu (Lampowe / Taśmowe) -->
+			<div id="satTypeSelector">
+			  <button type="button" class="sat-type-btn active" data-type="tube">Tube (Lampa)</button>
+			  <button type="button" class="sat-type-btn" data-type="tape">Tape (Taśma)</button>
+			</div>
+
+			<!-- KONTROLKI SUWAKÓW -->
+			<div id="satControlsGrid">
+			  
+			  <!-- DRIVE -->
+			  <div class="sat-control-group">
+				<div class="sat-label-row">
+				  <label for="satDrive">DRIVE</label>
+				  <span class="sat-val" id="satDriveVal">20%</span>
+				</div>
+				<input type="range" id="satDrive" min="0" max="100" value="20" class="sat-slider">
+			  </div>
+
+			  <!-- TONE -->
+			  <div class="sat-control-group">
+				<div class="sat-label-row">
+				  <label for="satTone">TONE</label>
+				  <span class="sat-val" id="satToneVal">50%</span>
+				</div>
+				<input type="range" id="satTone" min="0" max="100" value="50" class="sat-slider">
+			  </div>
+
+			  <!-- MIX -->
+			  <div class="sat-control-group">
+				<div class="sat-label-row">
+				  <label for="satMix">MIX</label>
+				  <span class="sat-val" id="satMixVal">100%</span>
+				</div>
+				<input type="range" id="satMix" min="0" max="100" value="100" class="sat-slider">
+			  </div>
+
+			</div>
+		  </div>
+		</div>
 
         <!-- Reverb -->
-        <div class="fx-card" id="fxReverb" onclick="this.classList.toggle('active')">
-          <div class="fx-card-header">
-            <span class="fx-card-name">Reverb</span>
-            <div class="fx-toggle-btn"></div>
-          </div>
-          <div class="fx-card-body">Przestrzeń i pogłos</div>
-        </div>
+		<div id="fxReverb" class="fx-card">
+		  <div class="fx-card-header" id="fxReverbHeader">
+			<span class="fx-card-name">Reverb / Pogłos</span>
+			<div class="fx-toggle-btn"></div>
+		  </div>
+		  <div class="fx-body">
+			<div class="rev-controls-grid">
+			  <!-- Decay -->
+			  <div class="rev-knob-group">
+				<label>DECAY</label>
+				<div class="rev-knob-container">
+				  <input type="range" id="revDecay" class="rev-knob-input" min="0.1" max="10" step="0.05" value="2">
+				  <div class="rev-knob-indicator"></div>
+				</div>
+				<span class="rev-val" id="revDecayVal">2s</span>
+			  </div>
+
+			  <!-- Damping -->
+			  <div class="rev-knob-group">
+				<label>DAMPING</label>
+				<div class="rev-knob-container">
+				  <input type="range" id="revDamping" class="rev-knob-input" min="500" max="20000" step="10" value="4000">
+				  <div class="rev-knob-indicator"></div>
+				</div>
+				<span class="rev-val" id="revDampingVal">4000 Hz</span>
+			  </div>
+
+			  <!-- Pre-Delay -->
+			  <div class="rev-knob-group">
+				<label>PRE-DELAY</label>
+				<div class="rev-knob-container">
+				  <input type="range" id="revPreDelay" class="rev-knob-input" min="0" max="200" step="1" value="20">
+				  <div class="rev-knob-indicator"></div>
+				</div>
+				<span class="rev-val" id="revPreDelayVal">20 ms</span>
+			  </div>
+
+			  <!-- Mix -->
+			  <div class="rev-knob-group">
+				<label>MIX</label>
+				<div class="rev-knob-container">
+				  <input type="range" id="revMix" class="rev-knob-input" min="0" max="100" step="1" value="30">
+				  <div class="rev-knob-indicator"></div>
+				</div>
+				<span class="rev-val" id="revMixVal">30%</span>
+			  </div>
+			</div>
+		  </div>
+		</div>
 
       </div>
     </div>
@@ -1438,7 +2068,7 @@
     function stopDawPlayback() {
       isDawPlaying = false;
       dawPlayBtn.classList.remove('playing');
-      dawPlayBtn.innerHTML = `<span>█ STOP</span>`;
+      dawPlayBtn.innerHTML = `<span>PLAY</span>`;
       
       if (dawAnimFrame) cancelAnimationFrame(dawAnimFrame);
 
@@ -1790,7 +2420,1259 @@
 	  document.body.removeChild(a);
 	}
 
-	// 1. Pobieranie samego Bitu
+	// ==========================================
+	// 1. STANY WTYCZEK (AUTOTUNE & EQUALIZER)
+	// ==========================================
+	let liveAudioCtx = null;
+	let liveVocalSource = null;
+	let liveGainNode = null;
+	let activePitchShiftNode = null;
+	
+
+	const eqState = {
+	  active: false,
+	  nodes: [
+		{ type: 'lowshelf', freq: 100,  gain: 0, color: '#ff5252' },  // 1: Dół / Bass
+		{ type: 'peaking',  freq: 500,  gain: 0, color: '#ff4081' },  // 2: Niska średnica
+		{ type: 'peaking',  freq: 2500, gain: 0, color: '#e040fb' },  // 3: Wysoka średnica
+		{ type: 'highshelf',freq: 8000, gain: 0, color: '#7c4dff' }   // 4: Góra / Sopran
+	  ]
+	};
+	// Obiekt stanu dla AutoTune (dostępny globalnie)
+	window.autoTuneState = window.autoTuneState || {
+	  active: false,
+	  note: 'C',
+	  accidental: '',
+	  mode: 'major',
+	  speedMs: 20
+	};
+	
+	const saturationState = {
+	  active: false,
+	  type: 'tube',  // 'tube' lub 'tape'
+	  drive: 20,     // 0 - 100
+	  tone: 50,      // 0 - 100
+	  mix: 100       // 0 - 100
+	};
+
+	let draggingNodeIndex = -1;
+	let activeEqFilters = []; // Aktywne instancje BiquadFilterNode w czasie rzeczywistym
+	
+	// Obiekt stanu dla Reverbu
+   window.reverbState = window.reverbState || { active: false, decay: 2.0, damping: 4000, preDelay: 20, mix: 30 };
+	
+    // ==========================================
+	// --- OBSŁUGA INTERFEJSU REVERB (NAPRAWIONA) ---
+	// ==========================================
+
+	const revHeader = document.getElementById('fxReverbHeader');
+	const revCard = document.getElementById('fxReverb');
+	const revToggleText = revHeader ? revHeader.querySelector('.fx-toggle-text') : null;
+
+	// 1. Obsługa włączania i wyłączania wtyczki w silniku audio
+	if (revCard) {
+	  revCard.addEventListener('click', (e) => {
+		// Przerywamy kliknięcie, jeśli użytkownik kręci suwakiem/pokrętłem
+		if (e.target.classList.contains('rev-knob-input')) return;
+
+		if (typeof reverbState !== 'undefined') {
+		  reverbState.active = !reverbState.active;
+		  revCard.classList.toggle('active', reverbState.active);
+
+		  if (revToggleText) {
+			revToggleText.textContent = reverbState.active ? 'ON' : 'OFF';
+		  }
+
+		  // Reconnect wtyczki w żywym silniku audio
+		  if (typeof reconnectLiveVocalEngine === 'function' && typeof recordedAudioPlayer !== 'undefined' && !recordedAudioPlayer.paused) {
+			reconnectLiveVocalEngine();
+		  }
+		}
+	  });
+	}
+
+	// 2. Połączenie suwaków ze stanem silnika audio + Animacja obrotu pokrętła
+	const revDecay = document.getElementById('revDecay');
+	const revDamping = document.getElementById('revDamping');
+	const revPreDelay = document.getElementById('revPreDelay');
+	const revMix = document.getElementById('revMix');
+
+	const revDecayVal = document.getElementById('revDecayVal');
+	const revDampingVal = document.getElementById('revDampingVal');
+	const revPreDelayVal = document.getElementById('revPreDelayVal');
+	const revMixVal = document.getElementById('revMixVal');
+
+	function syncRevInput(inputEl, valEl, stateKey, unit = '') {
+	  if (!inputEl) return;
+
+	  const group = inputEl.closest('.rev-knob-group');
+	  const indicator = group ? group.querySelector('.rev-knob-indicator') : null;
+
+	  const update = () => {
+		const value = parseFloat(inputEl.value);
+
+		// Zapisujemy wartość w stanie audio
+		if (typeof reverbState !== 'undefined') {
+		  reverbState[stateKey] = value;
+		}
+
+		// Aktualizujemy tekst pod pokrętłem
+		if (valEl) valEl.textContent = value + unit;
+
+		// Obracamy kreskę na pokrętle (-135deg do +135deg)
+		if (indicator) {
+		  const min = parseFloat(inputEl.min) || 0;
+		  const max = parseFloat(inputEl.max) || 100;
+		  const percent = (value - min) / (max - min);
+		  const angle = -135 + (percent * 270);
+		  indicator.style.transform = `rotate(${angle}deg)`;
+		}
+
+		// Wywołanie aktualizacji dźwięku w czasie rzeczywistym
+		if (typeof updateLiveReverb === 'function') {
+		  updateLiveReverb();
+		}
+	  };
+
+	  inputEl.addEventListener('input', update);
+	  inputEl.addEventListener('change', update);
+	  update(); // Inicjalny obrót i ustawienie przy starcie
+	}
+	// --- DODATKOWA PRECYZJA I OPÓR POKRĘTEŁ REVERBU ---
+	const revKnobs = document.querySelectorAll('#fxReverb .rev-knob-input');
+
+	revKnobs.forEach(knob => {
+	  let isDragging = false;
+	  let startY = 0;
+	  let startValue = 0;
+
+	  knob.addEventListener('mousedown', (e) => {
+		isDragging = true;
+		startY = e.clientY;
+		startValue = parseFloat(knob.value);
+		document.body.style.cursor = 'ns-resize'; // Zmiana kursora na góra-dół
+	  });
+
+	  window.addEventListener('mousemove', (e) => {
+		if (!isDragging) return;
+
+		// Różnica w pikselach (ruch w górę zwiększa wartość, w dół zmniejsza)
+		const deltaY = startY - e.clientY;
+
+		const min = parseFloat(knob.min) || 0;
+		const max = parseFloat(knob.max) || 100;
+		const range = max - min;
+
+		// PROMIENIOWANIE OPORU:
+		// Im wyższa liczba (np. 500), tym wolniej kręci się pokrętło!
+		const SENSITIVITY = 400; 
+
+		// Obliczamy nową wartość ze zwolnionym tempem
+		const newValue = startValue + (deltaY / SENSITIVITY) * range;
+
+		// Ograniczamy wartość do min/max
+		knob.value = Math.max(min, Math.min(max, newValue));
+
+		// Wywołujemy zdarzenie input, żeby syncRevInput odświeżył pokrętło i audio
+		knob.dispatchEvent(new Event('input'));
+	  });
+
+	  window.addEventListener('mouseup', () => {
+		if (isDragging) {
+		  isDragging = false;
+		  document.body.style.cursor = '';
+		}
+	  });
+	});
+
+	// Subskrypcja suwaków pod silnik
+	syncRevInput(revDecay, revDecayVal, 'decay', 's');
+	syncRevInput(revDamping, revDampingVal, 'damping', ' Hz');
+	syncRevInput(revPreDelay, revPreDelayVal, 'preDelay', ' ms');
+	syncRevInput(revMix, revMixVal, 'mix', '%');
+	
+	
+	
+	// --- WĘZŁY AUDIO DLA SATURACJI ---
+	let satNodes = {
+	  input: null,
+	  shaper: null,
+	  toneFilter: null,
+	  dryGain: null,
+	  wetGain: null,
+	  output: null
+	};
+
+	// Generowanie krzywej przesterowania Lampowego (Soft Clipping / Asymmetric)
+	function makeTubeCurve(drive) {
+	  const k = drive;
+	  const n_samples = 44100;
+	  const curve = new Float32Array(n_samples);
+	  const deg = Math.PI / 180;
+
+	  for (let i = 0; i < n_samples; ++i) {
+		let x = (i * 2) / n_samples - 1;
+		// Asymetryczny przester lampowy
+		if (k === 0) {
+		  curve[i] = x;
+		} else {
+		  curve[i] = Math.tanh(x * (1 + k / 10));
+		}
+	  }
+	  return curve;
+	}
+
+	// Generowanie krzywej przesterowania Taśmowego (Tape Saturation / Symmetric Compression)
+	function makeTapeCurve(drive) {
+	  const k = drive / 10;
+	  const n_samples = 44100;
+	  const curve = new Float32Array(n_samples);
+
+	  for (let i = 0; i < n_samples; ++i) {
+		let x = (i * 2) / n_samples - 1;
+		if (k === 0) {
+		  curve[i] = x;
+		} else {
+		  // Symetryczna kompresja taśmowa (Cubic / Sigmoid)
+		  curve[i] = (3 * x / 2) * (1 - (Math.pow(x, 2) / 3));
+		  // Dodatkowe wygładzenie dla nasycenia taśmowego przy wyższym drive
+		  if (k > 2) {
+			curve[i] = Math.atan(curve[i] * (1 + k / 5));
+		  }
+		}
+	  }
+	  return curve;
+	}
+	// Tworzenie łańcucha audio dla Saturacji
+	function createSaturationNodes(audioCtx) {
+	  if (!audioCtx) return null;
+
+	  const input = audioCtx.createGain();
+	  const shaper = audioCtx.createWaveShaper();
+	  const toneFilter = audioCtx.createBiquadFilter();
+	  const dryGain = audioCtx.createGain();
+	  const wetGain = audioCtx.createGain();
+	  const output = audioCtx.createGain();
+
+	  shaper.oversample = '4x'; // Lepsza jakość bez aliasingu
+
+	  // Ustawienie domyślne filtra barwy (Tone)
+	  toneFilter.type = 'lowshelf';
+	  toneFilter.frequency.value = 3000;
+
+	  // Połączenia ścieżek sygnałowych:
+	  // 1. Dry path (czysty sygnał)
+	  input.connect(dryGain);
+	  dryGain.connect(output);
+
+	  // 2. Wet path (sygnał ze saturacją i barwą)
+	  input.connect(shaper);
+	  shaper.connect(toneFilter);
+	  toneFilter.connect(wetGain);
+	  wetGain.connect(output);
+
+	  satNodes = { input, shaper, toneFilter, dryGain, wetGain, output };
+
+	  // Zastosuj aktualne parametry ze stanu
+	  updateLiveSaturation();
+
+	  return satNodes;
+	}
+
+	// Aktualizacja parametrów dźwięku w czasie rzeczywistym
+	function updateLiveSaturation() {
+	  if (!satNodes.shaper || !satNodes.toneFilter) return;
+
+	  const driveVal = saturationState.drive; // 0 - 100
+	  const toneVal = saturationState.tone;   // 0 - 100
+	  const mixVal = saturationState.mix / 100; // 0.0 - 1.0
+
+	  // 1. Ustawienie krzywej przesteru w zależności od typu (Tube vs Tape)
+	  if (saturationState.type === 'tape') {
+		satNodes.shaper.curve = makeTapeCurve(driveVal);
+	  } else {
+		satNodes.shaper.curve = makeTubeCurve(driveVal);
+	  }
+
+	  // 2. Ustawienie TONE (Filtr podbijający/scinający wysokie częstotliwości)
+	  // Tone 50% = 0dB (płasko), 100% = +6dB, 0% = -12dB
+	  const toneGain = ((toneVal - 50) / 50) * 9; 
+	  satNodes.toneFilter.gain.value = toneGain;
+
+	  // 3. Ustawienie MIX (Dry / Wet)
+	  if (!saturationState.active) {
+		satNodes.dryGain.gain.value = 1;
+		satNodes.wetGain.gain.value = 0;
+	  } else {
+		satNodes.dryGain.gain.value = 1 - mixVal;
+		satNodes.wetGain.gain.value = mixVal;
+	  }
+	}
+	// ==========================================
+	// 2. FUNKCJE POMOCNICZE EQ (POPRAWIONA OS Y)
+	// ==========================================
+
+	function freqToX(freq, width) {
+	  const minF = Math.log10(20);
+	  const maxF = Math.log10(20000);
+	  return ((Math.log10(freq) - minF) / (maxF - minF)) * width;
+	}
+
+	function xToFreq(x, width) {
+	  const minF = Math.log10(20);
+	  const maxF = Math.log10(20000);
+	  const log = minF + (x / width) * (maxF - minF);
+	  return Math.pow(10, log);
+	}
+
+	// Y = 0 jest na samej górze canvasu!
+	// Dół = minus dB, Góra = plus dB
+	function gainToY(gain, height) {
+	  const centerY = height / 2;
+	  const maxPixels = height / 2 - 12;
+	  return centerY - (gain / 18) * maxPixels;
+	}
+
+	function yToGain(y, height) {
+	  const centerY = height / 2;
+	  const maxPixels = height / 2 - 12;
+	  const gain = ((centerY - y) / maxPixels) * 18;
+	  return Math.max(-18, Math.min(18, gain));
+	}
+
+	function drawEQ() {
+	  const canvas = document.getElementById('eqCanvas');
+	  if (!canvas) return;
+	  const ctx = canvas.getContext('2d');
+
+	  // 1. NAPRAWA ROZCIĄGANIA (Dopasowanie rozdzielczości wewnętrznej Canvasa do CSS)
+	  const rect = canvas.getBoundingClientRect();
+	  const dpr = window.devicePixelRatio || 1;
+	  
+	  if (canvas.width !== Math.round(rect.width * dpr) || canvas.height !== Math.round(rect.height * dpr)) {
+		canvas.width = Math.round(rect.width * dpr);
+		canvas.height = Math.round(rect.height * dpr);
+	  }
+
+	  ctx.save();
+	  ctx.scale(dpr, dpr);
+
+	  const w = rect.width;
+	  const h = rect.height;
+
+	  // Tło i czyszczenie
+	  ctx.fillStyle = '#0f1115';
+	  ctx.fillRect(0, 0, w, h);
+
+	  // --- SIATKA I ETYKIETY (GRID) ---
+	  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+	  ctx.lineWidth = 1;
+
+	  // Pozioma linia 0 dB
+	  ctx.beginPath();
+	  ctx.moveTo(0, h / 2);
+	  ctx.lineTo(w, h / 2);
+	  ctx.stroke();
+
+	  // Linie pomocnicze dB (+9dB, -9dB)
+	  const yPlus9 = gainToY(9, h);
+	  const yMinus9 = gainToY(-9, h);
+	  ctx.setLineDash([3, 3]);
+	  ctx.beginPath();
+	  ctx.moveTo(0, yPlus9); ctx.lineTo(w, yPlus9);
+	  ctx.moveTo(0, yMinus9); ctx.lineTo(w, yMinus9);
+	  ctx.stroke();
+	  ctx.setLineDash([]); // Reset dashed lines
+
+	  // Pionowe linie częstotliwości (100Hz, 1kHz, 10kHz)
+	  [100, 1000, 10000].forEach(f => {
+		const x = freqToX(f, w);
+		ctx.beginPath();
+		ctx.moveTo(x, 0);
+		ctx.lineTo(x, h);
+		ctx.stroke();
+
+		// Subtelny podpis częstotliwości
+		ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+		ctx.font = '9px Inter, sans-serif';
+		ctx.textAlign = 'center';
+		ctx.fillText(f >= 1000 ? (f / 1000) + 'k' : f + 'Hz', x, h - 4);
+	  });
+
+	  // --- WYLICZANIE KRZYWEJ EQ ---
+	  const points = [];
+	  for (let x = 0; x <= w; x += 1.5) {
+		const currentFreq = xToFreq(x, w);
+		let totalGain = 0;
+
+		eqState.nodes.forEach((node) => {
+		  if (node.type === 'lowshelf') {
+			if (currentFreq <= node.freq) {
+			  totalGain += node.gain;
+			} else {
+			  const dist = Math.log10(currentFreq) - Math.log10(node.freq);
+			  totalGain += node.gain * Math.exp(-Math.pow(dist / 0.25, 2));
+			}
+		  } else if (node.type === 'highshelf') {
+			if (currentFreq >= node.freq) {
+			  totalGain += node.gain;
+			} else {
+			  const dist = Math.log10(node.freq) - Math.log10(currentFreq);
+			  totalGain += node.gain * Math.exp(-Math.pow(dist / 0.25, 2));
+			}
+		  } else {
+			const dist = Math.abs(Math.log10(currentFreq) - Math.log10(node.freq));
+			totalGain += node.gain * Math.exp(-Math.pow(dist / 0.32, 2));
+		  }
+		});
+
+		const y = gainToY(totalGain, h);
+		points.push({ x, y });
+	  }
+
+	  // --- GRADIENT WYPEŁNIENIA POD KRZYWĄ ---
+	  if (points.length > 0) {
+		const fillGradient = ctx.createLinearGradient(0, 0, 0, h);
+		if (eqState.active) {
+		  fillGradient.addColorStop(0, 'rgba(0, 230, 118, 0.25)');
+		  fillGradient.addColorStop(0.5, 'rgba(0, 230, 118, 0.05)');
+		  fillGradient.addColorStop(1, 'rgba(0, 230, 118, 0.0)');
+		} else {
+		  fillGradient.addColorStop(0, 'rgba(255, 255, 255, 0.08)');
+		  fillGradient.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
+		}
+
+		ctx.beginPath();
+		ctx.moveTo(0, h / 2);
+		points.forEach(p => ctx.lineTo(p.x, p.y));
+		ctx.lineTo(w, h / 2);
+		ctx.closePath();
+		ctx.fillStyle = fillGradient;
+		ctx.fill();
+	  }
+
+	  // --- GLÓWNA LINIAS KRZYWEJ EQ ---
+	  if (points.length > 0) {
+		ctx.beginPath();
+		ctx.strokeStyle = eqState.active ? '#00e676' : '#777777';
+		ctx.lineWidth = 2;
+		ctx.shadowColor = eqState.active ? 'rgba(0, 230, 118, 0.5)' : 'transparent';
+		ctx.shadowBlur = 8;
+
+		points.forEach((p, index) => {
+		  if (index === 0) ctx.moveTo(p.x, p.y);
+		  else ctx.lineTo(p.x, p.y);
+		});
+		ctx.stroke();
+		ctx.shadowBlur = 0; // Reset cienia
+	  }
+
+	  // --- RYSOWANIE IDALNIE OKRĄGŁYCH KROPEK (WĘZŁÓW EQ) ---
+	  const nodeColors = ['#ff5252', '#ff4081', '#e040fb', '#7c4dff'];
+
+	  eqState.nodes.forEach((node, index) => {
+		const nx = freqToX(node.freq, w);
+		const ny = gainToY(node.gain, h);
+		const isDragging = draggingNodeIndex === index;
+		const radius = isDragging ? 11 : 9;
+
+		// Cień / Poświata kropki
+		ctx.save();
+		ctx.shadowColor = nodeColors[index];
+		ctx.shadowBlur = isDragging ? 14 : 6;
+
+		// Zewnętrzna obwódka / pierścień
+		ctx.beginPath();
+		ctx.arc(nx, ny, radius, 0, Math.PI * 2);
+		ctx.fillStyle = nodeColors[index];
+		ctx.fill();
+
+		ctx.restore();
+
+		// Biała obwódka przy aktywnym przeciąganiu
+		if (isDragging) {
+		  ctx.beginPath();
+		  ctx.arc(nx, ny, radius + 2, 0, Math.PI * 2);
+		  ctx.strokeStyle = '#ffffff';
+		  ctx.lineWidth = 1.5;
+		  ctx.stroke();
+		}
+
+		// Numer kropki (Idealnie wyśrodkowany)
+		ctx.fillStyle = '#ffffff';
+		ctx.font = 'bold 10px system-ui, sans-serif';
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
+		ctx.fillText(index + 1, nx, ny + 0.5);
+	  });
+
+	  ctx.restore();
+	}
+
+	// Zmiana parametrów filtrowania w czasie rzeczywistym przy przeciąganiu myszy
+	function updateLiveEQNodes(ctxTime) {
+	  if (!eqState.active || activeEqFilters.length === 0) return;
+	  const now = ctxTime || (liveAudioCtx ? liveAudioCtx.currentTime : 0);
+
+	  eqState.nodes.forEach((node, idx) => {
+		if (activeEqFilters[idx]) {
+		  activeEqFilters[idx].frequency.setTargetAtTime(node.freq, now, 0.02);
+		  activeEqFilters[idx].gain.setTargetAtTime(node.gain, now, 0.02);
+		}
+	  });
+	}
+	// ==========================================
+	// ALGORYTM SKAL I DOPASOWANIA NUT DLA AUTOTUNE
+	// ==========================================
+	
+	const NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+	function getTargetScalePitchSet() {
+	  if (autoTuneState.mode === 'chromatic') {
+		// Chromatyczna = wszystkie 12 nut w skali
+		return new Set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+	  }
+
+	  let root = autoTuneState.note || 'C';
+	  let rootIndex = NOTE_NAMES.indexOf(root);
+	  if (rootIndex === -1) rootIndex = 0;
+
+	  const intervals = autoTuneState.mode === 'major'
+		? [0, 2, 4, 5, 7, 9, 11]  // Skala Major (Dur)
+		: [0, 2, 3, 5, 7, 8, 10]; // Skala Minor (Moll)
+
+	  const scaleNotes = new Set();
+	  intervals.forEach(semi => scaleNotes.add((rootIndex + semi) % 12));
+	  return scaleNotes;
+	}
+	// ==========================================
+	// ALGORYTM DETEKCJI CZĘSTOTLIWOŚCI (AUTOCORRELATION)
+	// ==========================================
+
+	function detectPitch(buf, sampleRate) {
+	  let SIZE = buf.length;
+	  let rms = 0;
+
+	  // 1. Obliczenie głośności (RMS) – jeśli jest zbyt cicho, ignorujemy szum
+	  for (let i = 0; i < SIZE; i++) {
+		rms += buf[i] * buf[i];
+	  }
+	  rms = Math.sqrt(rms / SIZE);
+	  if (rms < 0.01) return -1; // Cisza / szum tła
+
+	  // 2. Obcięcie niepotrzebnych krawędzi sygnału (Trimming)
+	  let r1 = 0, r2 = SIZE - 1, thres = 0.2;
+	  for (let i = 0; i < SIZE / 2; i++) {
+		if (Math.abs(buf[i]) < thres) { r1 = i; break; }
+	  }
+	  for (let i = 1; i < SIZE / 2; i++) {
+		if (Math.abs(buf[SIZE - i]) < thres) { r2 = SIZE - i; break; }
+	  }
+
+	  buf = buf.slice(r1, r2);
+	  SIZE = buf.length;
+
+	  // 3. Autokorelacja (znajdowanie powtarzającej się fali dźwiękowej)
+	  let c = new Float32Array(SIZE);
+	  for (let i = 0; i < SIZE; i++) {
+		for (let j = 0; j < SIZE - i; j++) {
+		  c[i] = c[i] + buf[j] * buf[j + i];
+		}
+	  }
+
+	  let d = 0;
+	  while (c[d] > c[d + 1]) d++;
+	  let maxval = -1, maxpos = -1;
+	  for (let i = d; i < SIZE; i++) {
+		if (c[i] > maxval) {
+		  maxval = c[i];
+		  maxpos = i;
+		}
+	  }
+	  
+	  let T0 = maxpos;
+
+	  // Zwraca wyliczoną częstotliwość w Hz (np. 440 Hz dla nuty A)
+	  return sampleRate / T0;
+	}
+	
+	function getClosestScaleFreq(freq) {
+	  if (freq <= 40 || freq > 2000) return freq;
+
+	  let midi = 69 + 12 * Math.log2(freq / 440);
+	  let noteIndex = Math.round(midi) % 12;
+	  if (noteIndex < 0) noteIndex += 12;
+
+	  const validScaleNotes = getTargetScalePitchSet();
+	  if (validScaleNotes.has(noteIndex)) {
+		return 440 * Math.pow(2, (Math.round(midi) - 69) / 12);
+	  }
+
+	  let bestMidi = Math.round(midi);
+	  let minDiff = 999;
+
+	  for (let shift = -6; shift <= 6; shift++) {
+		let checkMidi = Math.round(midi) + shift;
+		let checkNote = checkMidi % 12;
+		if (checkNote < 0) checkNote += 12;
+
+		if (validScaleNotes.has(checkNote)) {
+		  let diff = Math.abs(midi - checkMidi);
+		  if (diff < minDiff) {
+			minDiff = diff;
+			bestMidi = checkMidi;
+		  }
+		}
+	  }
+
+	  return 440 * Math.pow(2, (bestMidi - 69) / 12);
+	}
+	// ==========================================
+	// 3. PRAWDZIWY SILNIK AUTOTUNE (PITCH CORRECTION)
+	// ==========================================
+	
+	class RealtimeAutoTune {
+	  constructor(context) {
+		this.context = context;
+		this.input = context.createGain();
+		this.output = context.createGain();
+
+		this.analyser = context.createAnalyser();
+		this.analyser.fftSize = 1024; // Mniejsza bufor = szybsza reakcja w czasie rzeczywistym
+
+		// Główny węzeł przesunięcia tonu
+		this.delayNode = context.createDelay();
+		this.delayNode.delayTime.value = 0.015;
+
+		this.input.connect(this.analyser);
+		this.input.connect(this.delayNode);
+		this.delayNode.connect(this.output);
+
+		this.buffer = new Float32Array(this.analyser.fftSize);
+		this.isProcessing = false;
+		this.currentPitchRatio = 1.0;
+	  }
+
+	  start() {
+		if (this.isProcessing) return;
+		this.isProcessing = true;
+		this.process();
+	  }
+
+	  stop() {
+		this.isProcessing = false;
+	  }
+
+	  process() {
+		if (!this.isProcessing) return;
+
+		if (window.autoTuneState && window.autoTuneState.active) {
+		  this.analyser.getFloatTimeDomainData(this.buffer);
+		  
+		  const detectedFreq = detectPitch(this.buffer, this.context.sampleRate);
+
+		  const noteDisplay = document.getElementById('atTargetNoteDisplay');
+		  const statusDisplay = document.getElementById('atPitchStatus');
+
+		  if (detectedFreq > 70 && detectedFreq < 1000) {
+			const targetFreq = getClosestScaleFreq(detectedFreq);
+			
+			// Stosunek tonu (Pitch Shift Factor)
+			const targetRatio = targetFreq / detectedFreq;
+
+			// AGRESYWNOŚĆ: Suwak 0ms = HARD LOCK (brak wygładzania, czysty T-Pain)
+			const speed = (window.autoTuneState.speedMs || 0) / 100; // 0 do 1.0
+			
+			if (speed === 0) {
+			  // Błyskawiczny przeskok (0ms wygładzania)
+			  this.currentPitchRatio = targetRatio;
+			} else {
+			  // Płynne dociąganie zależne od Retune Speed
+			  this.currentPitchRatio += (targetRatio - this.currentPitchRatio) * (1 - speed * 0.85);
+			}
+
+			// Podbicie efektu przesunięcia w czystym AudioParam
+			const pitchDiff = (1 - this.currentPitchRatio);
+			const modDelay = 0.015 + (pitchDiff * 0.012); // Mocniejszy wychył fali soundowej
+
+			this.delayNode.delayTime.setTargetAtTime(
+			  Math.max(0.002, Math.min(0.04, modDelay)),
+			  this.context.currentTime,
+			  speed === 0 ? 0.001 : 0.008 // Instant step
+			);
+
+			// Wyświetlacz
+			if (noteDisplay) {
+			  const midiNote = Math.round(69 + 12 * Math.log2(targetFreq / 440));
+			  noteDisplay.textContent = NOTE_NAMES[midiNote % 12];
+			}
+			if (statusDisplay) {
+			  statusDisplay.textContent = `${Math.round(detectedFreq)}Hz ➔ ${Math.round(targetFreq)}Hz`;
+			  statusDisplay.style.color = '#00e676';
+			}
+		  } else {
+			if (statusDisplay) {
+			  statusDisplay.textContent = 'READY';
+			  statusDisplay.style.color = '#555';
+			}
+		  }
+		}
+
+		requestAnimationFrame(() => this.process());
+	  }
+	}
+	// ==========================================
+	// 4. FUNKCJE POMOCNICZE (EQ, AUTOTUNE PITCH)
+	// ==========================================
+
+	function freqToX(freq, width) {
+	  const minF = Math.log10(20), maxF = Math.log10(20000);
+	  return ((Math.log10(freq) - minF) / (maxF - minF)) * width;
+	}
+
+	function xToFreq(x, width) {
+	  const minF = Math.log10(20), maxF = Math.log10(20000);
+	  return Math.pow(10, minF + (x / width) * (maxF - minF));
+	}
+
+	function gainToY(gain, height) {
+	  return (height / 2) - (gain / 18) * (height / 2 - 12);
+	}
+
+	function yToGain(y, height) {
+	  const gain = (((height / 2) - y) / (height / 2 - 12)) * 18;
+	  return Math.max(-18, Math.min(18, gain));
+	}
+	// ==========================================
+	// 4. APLIKOWANIE ŁAŃCUCHA EFEKTÓW (EQ + AUTOTUNE)
+	// ==========================================
+
+	function applyVocalEffects(context, sourceNode, destinationNode) {
+	  let currentNode = sourceNode;
+	  activeEqFilters = [];
+
+	  // 1. EQUALIZER
+	  if (eqState.active) {
+		eqState.nodes.forEach(node => {
+		  const filter = context.createBiquadFilter();
+		  filter.type = node.type;
+		  filter.frequency.value = node.freq;
+		  filter.gain.value = node.gain;
+		  // Domyślne nachylenie półki dla Shelf to Q = 0.707
+		  filter.Q.value = (node.type === 'lowshelf' || node.type === 'highshelf') ? 0.707 : 1.0;
+
+		  currentNode.connect(filter);
+		  currentNode = filter;
+		  activeEqFilters.push(filter);
+		});
+	  }
+
+	  // 2. AUTOTUNE
+	  if (window.autoTuneState && window.autoTuneState.active) {
+		if (!activePitchShiftNode || activePitchShiftNode.context !== context) {
+		  activePitchShiftNode = new RealtimeAutoTune(context);
+		}
+		currentNode.connect(activePitchShiftNode.input);
+		activePitchShiftNode.start();
+		currentNode = activePitchShiftNode.output;
+	  } else if (activePitchShiftNode) {
+		activePitchShiftNode.stop();
+	  }
+
+	  // 3. SATURACJA (NASYCER)
+	  if (saturationState && saturationState.active) {
+		// Tworzenie węzłów audio saturacji dla danego kontekstu
+		const sat = createSaturationNodes(context);
+		if (sat) {
+		  currentNode.connect(sat.input);
+		  currentNode = sat.output;
+		}
+	  }
+	  
+	  // 4. REVERB (POGŁOS)
+	  if (window.reverbState && window.reverbState.active) {
+		const rev = createReverbNodes(context);
+		if (rev) {
+		  currentNode.connect(rev.input);
+		  currentNode = rev.output;
+		}
+	  }
+
+	  // Wyjście z całego toru efektów do docelowego węzła (głośniki / render)
+	  currentNode.connect(destinationNode);
+	}
+	// ==========================================
+	// 3.5. LOGIKA DŹWIĘKOWA DLA SATURACJI
+	// ==========================================
+
+	// Generowanie krzywej przesterowania Lampowego
+	function makeTubeCurve(drive) {
+	  const k = drive;
+	  const n_samples = 44100;
+	  const curve = new Float32Array(n_samples);
+
+	  for (let i = 0; i < n_samples; ++i) {
+		let x = (i * 2) / n_samples - 1;
+		if (k === 0) {
+		  curve[i] = x;
+		} else {
+		  curve[i] = Math.tanh(x * (1 + k / 12));
+		}
+	  }
+	  return curve;
+	}
+
+	// Generowanie krzywej przesterowania Taśmowego
+	function makeTapeCurve(drive) {
+	  const k = drive / 10;
+	  const n_samples = 44100;
+	  const curve = new Float32Array(n_samples);
+
+	  for (let i = 0; i < n_samples; ++i) {
+		let x = (i * 2) / n_samples - 1;
+		if (k === 0) {
+		  curve[i] = x;
+		} else {
+		  let val = (3 * x / 2) * (1 - (Math.pow(x, 2) / 3));
+		  if (k > 2) {
+			val = Math.atan(val * (1 + k / 5));
+		  }
+		  curve[i] = val;
+		}
+	  }
+	  return curve;
+	}
+
+	let activeSatNodes = null;
+
+	// Budowanie i połączenie węzłów Web Audio dla Saturacji
+	function createSaturationNodes(context) {
+	  if (!context) return null;
+
+	  const input = context.createGain();
+	  const shaper = context.createWaveShaper();
+	  const toneFilter = context.createBiquadFilter();
+	  const dryGain = context.createGain();
+	  const wetGain = context.createGain();
+	  const output = context.createGain();
+
+	  shaper.oversample = '4x';
+	  toneFilter.type = 'lowshelf';
+	  toneFilter.frequency.value = 3000;
+
+	  // Ścieżka Dry
+	  input.connect(dryGain);
+	  dryGain.connect(output);
+
+	  // Ścieżka Wet
+	  input.connect(shaper);
+	  shaper.connect(toneFilter);
+	  toneFilter.connect(wetGain);
+	  wetGain.connect(output);
+
+	  // Konfiguracja wartości ze stanu (saturationState)
+	  const driveVal = saturationState.drive || 0;
+	  const toneVal = saturationState.tone || 50;
+	  const mixVal = (saturationState.mix !== undefined ? saturationState.mix : 100) / 100;
+
+	  if (saturationState.type === 'tape') {
+		shaper.curve = makeTapeCurve(driveVal);
+	  } else {
+		shaper.curve = makeTubeCurve(driveVal);
+	  }
+
+	  // Tone (barwa): 50% = 0dB, 100% = +9dB, 0% = -9dB
+	  toneFilter.gain.value = ((toneVal - 50) / 50) * 9;
+
+	  // Dry/Wet Mix
+	  dryGain.gain.value = 1 - mixVal;
+	  wetGain.gain.value = mixVal;
+
+	  activeSatNodes = { input, shaper, toneFilter, dryGain, wetGain, output };
+
+	  return { input, output };
+	}
+
+	// Funkcja wywoływana podczas kręcenia suwakami na żywo
+	function updateLiveSaturation() {
+	  if (typeof liveAudioCtx !== 'undefined' && liveAudioCtx && typeof recordedAudioPlayer !== 'undefined' && recordedAudioPlayer && !recordedAudioPlayer.paused) {
+		if (typeof reconnectLiveVocalEngine === 'function') {
+		  reconnectLiveVocalEngine();
+		}
+	  }
+	}
+	
+	// ==========================================
+	// 3.6 LOGIKA DŹWIĘKOWA DLA REVERBU (POGŁOSU)
+	// ==========================================
+
+	// Generowanie impulsu przestrzennego dla ConvolverNode
+	function createReverbImpulse(context, decay) {
+	  const sampleRate = context.sampleRate || 44100;
+	  const length = Math.max(1, Math.floor(sampleRate * decay));
+	  const impulse = context.createBuffer(2, length, sampleRate);
+	  const left = impulse.getChannelData(0);
+	  const right = impulse.getChannelData(1);
+
+	  for (let i = 0; i < length; i++) {
+		const decayFactor = Math.exp(-i / (sampleRate * (decay / 4)));
+		left[i] = (Math.random() * 2 - 1) * decayFactor;
+		right[i] = (Math.random() * 2 - 1) * decayFactor;
+	  }
+	  return impulse;
+	}
+
+	function createReverbNodes(context) {
+	  if (!context) return null;
+
+	  const input = context.createGain();
+	  const preDelayNode = context.createDelay();
+	  const convolver = context.createConvolver();
+	  const dampingFilter = context.createBiquadFilter();
+	  const dryGain = context.createGain();
+	  const wetGain = context.createGain();
+	  const output = context.createGain();
+
+	  const decayVal = Math.max(0.1, reverbState.decay || 2.0);
+	  const dampingVal = reverbState.damping || 4000;
+	  const preDelayVal = (reverbState.preDelay || 20) / 1000;
+	  const mixVal = (reverbState.mix !== undefined ? reverbState.mix : 30) / 100;
+
+	  preDelayNode.delayTime.value = preDelayVal;
+	  convolver.buffer = createReverbImpulse(context, decayVal);
+	  
+	  dampingFilter.type = 'lowpass';
+	  dampingFilter.frequency.value = dampingVal;
+
+	  input.connect(dryGain);
+	  dryGain.connect(output);
+
+	  input.connect(preDelayNode);
+	  preDelayNode.connect(convolver);
+	  convolver.connect(dampingFilter);
+	  dampingFilter.connect(wetGain);
+	  wetGain.connect(output);
+
+	  dryGain.gain.value = 1 - mixVal;
+	  wetGain.gain.value = mixVal;
+
+	  return { input, output };
+	}
+	// Funkcja wywoływana podczas przestawiania suwaków Reverbu
+	function updateLiveReverb() {
+	  if (typeof liveAudioCtx !== 'undefined' && liveAudioCtx && typeof recordedAudioPlayer !== 'undefined' && recordedAudioPlayer && !recordedAudioPlayer.paused) {
+		if (typeof reconnectLiveVocalEngine === 'function') {
+		  reconnectLiveVocalEngine();
+		}
+	  }
+	}
+
+	
+	// ==========================================
+	// 5. OBSŁUGA ZDAREŃ DOM (CANVAS + PRZYCISKI)
+	// ==========================================
+
+	document.addEventListener('DOMContentLoaded', () => {
+	  const canvas = document.getElementById('eqCanvas');
+	  const eqHeader = document.getElementById('fxEqHeader');
+	  const eqCard = document.getElementById('fxEqualizer');
+	  const infoBar = document.getElementById('eqActiveNodeInfo');
+		const reverbCard = document.getElementById('fxReverb');
+
+  
+	  // Włączanie / Wyłączanie EQ
+	  if (eqHeader && eqCard) {
+		eqHeader.addEventListener('click', () => {
+		  eqState.active = !eqState.active;
+		  eqCard.classList.toggle('active', eqState.active);
+		  
+		  // Przebudowa toru audio po przełączeniu
+		  if (recordedAudioPlayer && !recordedAudioPlayer.paused) {
+			reconnectLiveVocalEngine();
+		  }
+		  drawEQ();
+		});
+	  }
+	  
+	  // Obsługa myszy na Canvasie EQ
+	  if (canvas) {
+		canvas.addEventListener('mousedown', (e) => {
+		  const rect = canvas.getBoundingClientRect();
+		  const mx = e.clientX - rect.left;
+		  const my = e.clientY - rect.top;
+
+		  draggingNodeIndex = -1;
+		  eqState.nodes.forEach((node, index) => {
+			const nx = freqToX(node.freq, rect.width);
+			const ny = gainToY(node.gain, rect.height);
+			if (Math.hypot(mx - nx, my - ny) < 16) {
+			  draggingNodeIndex = index;
+			}
+		  });
+		});
+
+		window.addEventListener('mousemove', (e) => {
+		  if (draggingNodeIndex === -1) return;
+
+		  const rect = canvas.getBoundingClientRect();
+		  let mx = e.clientX - rect.left;
+		  let my = e.clientY - rect.top;
+
+		  mx = Math.max(0, Math.min(rect.width, mx));
+		  my = Math.max(0, Math.min(rect.height, my));
+
+		  const node = eqState.nodes[draggingNodeIndex];
+		  node.freq = Math.round(xToFreq(mx, rect.width));
+		  node.gain = parseFloat(yToGain(my, rect.height).toFixed(1));
+
+		  if (infoBar) {
+			infoBar.textContent = `Pasma ${draggingNodeIndex + 1}: ${node.freq} Hz | ${node.gain > 0 ? '+' : ''}${node.gain} dB`;
+		  }
+
+		  drawEQ();
+		  updateLiveEQNodes();
+		});
+
+		window.addEventListener('mouseup', () => {
+		  if (draggingNodeIndex !== -1) {
+			draggingNodeIndex = -1;
+			drawEQ();
+		  }
+		});
+
+		drawEQ();
+	  }
+		// --- OBSŁUGA INTERFEJSU AUTOTUNE ---
+		const fxAutoTuneHeader = document.getElementById('fxAutoTuneHeader');
+		const fxAutoTuneCard = document.getElementById('fxAutoTune');
+		const atNoteSelect = document.getElementById('atNoteSelect');
+		const atModeSelect = document.getElementById('atModeSelect');
+		const atSpeedSlider = document.getElementById('atSpeedSlider');
+		const atSpeedVal = document.getElementById('atSpeedVal');
+		const atCurrentKeyDisplay = document.getElementById('atCurrentKeyDisplay');
+
+		// Funkcja odświeżająca napis tonacji (np. C MAJOR)
+		function updateKeyDisplay() {
+		  if (atCurrentKeyDisplay && atNoteSelect && atModeSelect) {
+			const note = atNoteSelect.value;
+			const mode = atModeSelect.value.toUpperCase();
+			atCurrentKeyDisplay.textContent = `${note} ${mode}`;
+		  }
+		}
+
+		if (fxAutoTuneHeader && fxAutoTuneCard) {
+		  fxAutoTuneHeader.addEventListener('click', () => {
+			autoTuneState.active = !autoTuneState.active;
+			fxAutoTuneCard.classList.toggle('active', autoTuneState.active);
+
+			if (typeof reconnectLiveVocalEngine === 'function' && typeof recordedAudioPlayer !== 'undefined' && !recordedAudioPlayer.paused) {
+			  reconnectLiveVocalEngine();
+			}
+		  });
+		}
+
+		if (atNoteSelect) {
+		  atNoteSelect.addEventListener('change', (e) => {
+			autoTuneState.note = e.target.value;
+			updateKeyDisplay();
+			if (typeof reconnectLiveVocalEngine === 'function' && typeof recordedAudioPlayer !== 'undefined' && !recordedAudioPlayer.paused) {
+			  reconnectLiveVocalEngine();
+			}
+		  });
+		}
+
+		if (atModeSelect) {
+		  atModeSelect.addEventListener('change', (e) => {
+			autoTuneState.mode = e.target.value;
+			updateKeyDisplay();
+			if (typeof reconnectLiveVocalEngine === 'function' && typeof recordedAudioPlayer !== 'undefined' && !recordedAudioPlayer.paused) {
+			  reconnectLiveVocalEngine();
+			}
+		  });
+		}
+
+		if (atSpeedSlider && atSpeedVal) {
+		  atSpeedSlider.addEventListener('input', (e) => {
+			autoTuneState.speedMs = parseInt(e.target.value);
+			atSpeedVal.textContent = autoTuneState.speedMs + ' ms';
+		  });
+		}
+
+		// Inicjalizacja nagłówka wyświetlacza
+		updateKeyDisplay();
+	  
+	  // --- OBSŁUGA INTERFEJSU SATURACJI ---
+	const satHeader = document.getElementById('fxSaturationHeader');
+		const satCard = document.getElementById('fxSaturation');
+		const toggleText = satHeader ? satHeader.querySelector('.fx-toggle-text') : null;
+
+		// Włączanie / Wyłączanie Saturacji
+		if (satHeader && satCard) {
+		  satHeader.addEventListener('click', () => {
+			saturationState.active = !saturationState.active;
+			satCard.classList.toggle('active', saturationState.active);
+
+			if (toggleText) {
+			  toggleText.textContent = saturationState.active ? 'ON' : 'OFF';
+			}
+
+			if (typeof reconnectLiveVocalEngine === 'function' && typeof recordedAudioPlayer !== 'undefined' && !recordedAudioPlayer.paused) {
+			  reconnectLiveVocalEngine();
+			}
+		  });
+		}
+
+		// Przełącznik Tube / Tape
+		const typeBtns = document.querySelectorAll('#satTypeSelector .sat-type-btn');
+		typeBtns.forEach(btn => {
+		  btn.addEventListener('click', (e) => {
+			typeBtns.forEach(b => b.classList.remove('active'));
+			e.target.classList.add('active');
+			saturationState.type = e.target.dataset.type;
+
+			if (typeof reconnectLiveVocalEngine === 'function' && typeof recordedAudioPlayer !== 'undefined' && !recordedAudioPlayer.paused) {
+			  reconnectLiveVocalEngine();
+			}
+		  });
+		});
+
+		// SUWAKI DLA DRIVE, TONE, MIX
+		const satDrive = document.getElementById('satDrive');
+		const satTone = document.getElementById('satTone');
+		const satMix = document.getElementById('satMix');
+
+		const satDriveVal = document.getElementById('satDriveVal');
+		const satToneVal = document.getElementById('satToneVal');
+		const satMixVal = document.getElementById('satMixVal');
+
+		// Aktualizacja wartości suwaka w HTML i w obiekcie stanu
+		function syncSatInput(inputEl, valEl, stateKey) {
+		  if (!inputEl) return;
+
+		  const update = () => {
+			const value = parseFloat(inputEl.value);
+			saturationState[stateKey] = value;
+			if (valEl) valEl.textContent = value + '%';
+
+			if (typeof updateLiveSaturation === 'function') {
+			  updateLiveSaturation();
+			}
+		  };
+
+		  // Zdarzenia dla przeciągania myszką oraz zmiany wartości
+		  inputEl.addEventListener('input', update);
+		  inputEl.addEventListener('change', update);
+
+		  // Początkowa synchronizacja
+		  update();
+		}
+		// --- ZWIĘKSZENIE DYSTANSU RUCHU MYSZY DLA POKRĘTEŁ REVERBU ---
+		const revInputs = document.querySelectorAll('#fxReverb .rev-knob-input');
+
+		revInputs.forEach(knob => {
+		  knob.addEventListener('mousedown', (e) => {
+			// 1. KLUCZOWE: Blokiujemy domyślne superszybkie przeciąganie przeglądarki!
+			e.preventDefault(); 
+
+			const startY = e.clientY;
+			const startVal = parseFloat(knob.value);
+			const min = parseFloat(knob.min) || 0;
+			const max = parseFloat(knob.max) || 100;
+
+			// 2. TUTAJ USTAWIASZ OPÓR (DYSTANS MYSZKI W PIKSELACH):
+			// 250px oznacza, że musisz przesunąć myszkę o około 6-7 cm w górę/dół na ekranie,
+			// aby przekręcić pokrętło od samego początku do samego końca.
+			// Jeśli chcesz JESZCZE WIĘKSZY opór, zmień 250 na np. 400.
+			const PIXELS_FOR_FULL_RANGE = 250; 
+
+			const onMouseMove = (moveEvent) => {
+			  // Ruch w górę (ujemne deltaY) zwiększa wartość, w dół zmniejsza
+			  const deltaY = startY - moveEvent.clientY; 
+			  
+			  const valueChange = (deltaY / PIXELS_FOR_FULL_RANGE) * (max - min);
+			  let newVal = startVal + valueChange;
+
+			  // Trzymamy wartość w przedziale min-max
+			  newVal = Math.max(min, Math.min(max, newVal));
+
+			  knob.value = newVal;
+			  
+			  // Wywołujemy zdarzenie input, żeby odświeżyć grafikę i dźwięk
+			  knob.dispatchEvent(new Event('input', { bubbles: true }));
+			};
+
+			const onMouseUp = () => {
+			  window.removeEventListener('mousemove', onMouseMove);
+			  window.removeEventListener('mouseup', onMouseUp);
+			};
+
+			window.addEventListener('mousemove', onMouseMove);
+			window.addEventListener('mouseup', onMouseUp);
+		  });
+		});
+
+		syncSatInput(satDrive, satDriveVal, 'drive');
+		syncSatInput(satTone, satToneVal, 'tone');
+		syncSatInput(satMix, satMixVal, 'mix');
+	});
+
+	// ==========================================
+	// 6. SILNIK AUDIO NA ŻYWO DLA ODTWARZACZA
+	// ==========================================
+
+	
+	function reconnectLiveVocalEngine() {
+	  if (!recordedAudioPlayer || !recordedAudioPlayer.src) return;
+
+	  if (!liveAudioCtx) {
+		liveAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+	  }
+
+	  if (liveAudioCtx.state === 'suspended') {
+		liveAudioCtx.resume();
+	  }
+
+	  try {
+		if (!liveVocalSource) {
+		  liveVocalSource = liveAudioCtx.createMediaElementSource(recordedAudioPlayer);
+		} else {
+		  liveVocalSource.disconnect();
+		}
+
+		if (liveGainNode) liveGainNode.disconnect();
+		liveGainNode = liveAudioCtx.createGain();
+
+		const dbVal = parseFloat(typeof micDbSlider !== 'undefined' && micDbSlider ? micDbSlider.value : 0);
+		liveGainNode.gain.value = dbToLinear(dbVal);
+
+		// Przepinamy wokal przez efekty i wysyłamy na głośniki
+		applyVocalEffects(liveAudioCtx, liveVocalSource, liveGainNode);
+		liveGainNode.connect(liveAudioCtx.destination);
+
+	  } catch (err) {
+		console.log("Reconnection info:", err);
+	  }
+	}
+
+	if (typeof recordedAudioPlayer !== 'undefined' && recordedAudioPlayer) {
+	  recordedAudioPlayer.addEventListener('play', () => {
+		reconnectLiveVocalEngine();
+	  });
+	}
+
+	if (typeof micDbSlider !== 'undefined' && micDbSlider) {
+	  micDbSlider.addEventListener('input', () => {
+		if (liveGainNode && liveAudioCtx) {
+		  const dbVal = parseFloat(micDbSlider.value);
+		  liveGainNode.gain.setTargetAtTime(dbToLinear(dbVal), liveAudioCtx.currentTime, 0.02);
+		}
+	  });
+	}
+
+	// ==========================================
+	// 7. POBIERANIE AUDIO (OFFLINE RENDERING)
+	// ==========================================
+
+	// Pobieranie samego Bitu
 	document.getElementById('dlBeatBtn').addEventListener('click', () => {
 	  if (!audioPlayer.src) {
 		alert("Brak wgranego bitu!");
@@ -1799,19 +3681,53 @@
 	  triggerDownload(audioPlayer.src, trackName.textContent || "bit.mp3");
 	});
 
-	// 2. Pobieranie samego Wokalu
-	document.getElementById('dlVocalsBtn').addEventListener('click', () => {
+	// Pobieranie Samego Wokalu Z Efektami
+	document.getElementById('dlVocalsBtn').addEventListener('click', async () => {
 	  if (!recordedAudioPlayer.src) {
 		alert("Brak nagranego wokalu!");
 		return;
 	  }
-	  triggerDownload(recordedAudioPlayer.src, "wokal_flowdoctor.webm");
+
+	  try {
+		const resp = await fetch(recordedAudioPlayer.src);
+		const buf = await resp.arrayBuffer();
+		
+		const tempCtx = new (window.AudioContext || window.webkitAudioContext)();
+		const audioBuf = await tempCtx.decodeAudioData(buf);
+
+		const offlineCtx = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(
+		  audioBuf.numberOfChannels,
+		  audioBuf.length,
+		  audioBuf.sampleRate
+		);
+
+		const src = offlineCtx.createBufferSource();
+		src.buffer = audioBuf;
+
+		const gainNode = offlineCtx.createGain();
+		const dbVal = parseFloat(micDbSlider ? micDbSlider.value : 0);
+		gainNode.gain.value = dbToLinear(dbVal);
+
+		applyVocalEffects(offlineCtx, src, gainNode);
+		gainNode.connect(offlineCtx.destination);
+
+		src.start(0);
+		const renderedBuffer = await offlineCtx.startRendering();
+		
+		const wavBlob = audioBufferToWav(renderedBuffer);
+		const wavUrl = URL.createObjectURL(wavBlob);
+		triggerDownload(wavUrl, "wokal_z_efektami.wav");
+
+	  } catch (err) {
+		console.error(err);
+		alert("Błąd przetwarzenia wokalu z wtyczkami.");
+	  }
 	});
 
-	// 3. Pobieranie Miksu (Render OfflineAudioContext)
+	// Pobieranie Miksu
 	document.getElementById('dlMixBtn').addEventListener('click', async () => {
 	  if (!audioPlayer.src && !recordedAudioPlayer.src) {
-		alert("Brak ścieżek do zrenderowania miksu!");
+		alert("Brak ścieżek do miksu!");
 		return;
 	  }
 
@@ -1822,7 +3738,6 @@
 		const sampleRate = 44100;
 		const offlineCtx = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(2, sampleRate * maxDur, sampleRate);
 
-		// Render bitu z uwzględnieniem suwaka głośności DAW
 		if (audioPlayer.src) {
 		  const resp = await fetch(audioPlayer.src);
 		  const buf = await resp.arrayBuffer();
@@ -1830,16 +3745,13 @@
 		  const src = offlineCtx.createBufferSource();
 		  const gainNode = offlineCtx.createGain();
 		  
-		  const dbVal = parseFloat(beatDbSlider.value);
-		  gainNode.gain.value = dbToLinear(dbVal);
-		  
+		  gainNode.gain.value = dbToLinear(parseFloat(beatDbSlider ? beatDbSlider.value : 0));
 		  src.buffer = audioBuf;
 		  src.connect(gainNode);
 		  gainNode.connect(offlineCtx.destination);
 		  src.start(0);
 		}
 
-		// Render wokalu z uwzględnieniem suwaka głośności DAW
 		if (recordedAudioPlayer.src) {
 		  const resp = await fetch(recordedAudioPlayer.src);
 		  const buf = await resp.arrayBuffer();
@@ -1847,29 +3759,26 @@
 		  const src = offlineCtx.createBufferSource();
 		  const gainNode = offlineCtx.createGain();
 
-		  const dbVal = parseFloat(micDbSlider.value);
-		  gainNode.gain.value = dbToLinear(dbVal);
-
+		  gainNode.gain.value = dbToLinear(parseFloat(micDbSlider ? micDbSlider.value : 0));
 		  src.buffer = audioBuf;
-		  src.connect(gainNode);
+
+		  applyVocalEffects(offlineCtx, src, gainNode);
 		  gainNode.connect(offlineCtx.destination);
 		  src.start(0);
 		}
 
 		const renderedBuffer = await offlineCtx.startRendering();
-		
-		// Konwersja zrenderowanego bufora do pliku WAV
 		const wavBlob = audioBufferToWav(renderedBuffer);
 		const wavUrl = URL.createObjectURL(wavBlob);
-		triggerDownload(wavUrl, "miks_flowdoctor.wav");
+		triggerDownload(wavUrl, "miks_z_wtyczkami.wav");
 
 	  } catch (err) {
 		console.error(err);
-		alert("Błąd podczas miksowania ścieżek.");
+		alert("Błąd podczas miksowania ścieżek z wtyczkami.");
 	  }
 	});
 
-	// Pomocniczy konwerter AudioBuffer -> WAV Blob
+	// Konwerter AudioBuffer -> WAV Blob
 	function audioBufferToWav(buffer) {
 	  let numOfChan = buffer.numberOfChannels,
 		  len = buffer.length * numOfChan * 2 + 44,
