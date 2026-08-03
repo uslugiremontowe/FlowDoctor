@@ -508,7 +508,7 @@
     }
 
     .btn-daw-play {
-      background-color: #f44336;
+      background-color: #4caf50;
       color: #fff;
       padding: 10px 24px;
       font-size: 0.95rem;
@@ -746,6 +746,81 @@
 	.download-dropdown.active .download-menu {
 	  display: block;
 	}
+
+  .fx-section {
+    margin-top: 35px;
+    padding: 0 10px;
+  }
+
+  .fx-title {
+    font-size: 0.85rem;
+    color: #888;
+    letter-spacing: 1.5px;
+    margin-bottom: 12px;
+    font-weight: bold;
+  }
+
+  .fx-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .fx-card {
+    background-color: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 130px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .fx-card:hover {
+    border-color: #444;
+    transform: translateY(-2px);
+  }
+
+  .fx-card.active {
+    border-color: #4caf50;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.15);
+  }
+
+  .fx-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .fx-card-name {
+    font-size: 0.95rem;
+    font-weight: bold;
+    color: #fff;
+  }
+
+  .fx-toggle-btn {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #444;
+    box-shadow: 0 0 4px #000 inset;
+    transition: all 0.2s;
+  }
+
+  .fx-card.active .fx-toggle-btn {
+    background-color: #4caf50;
+    box-shadow: 0 0 8px #4caf50;
+  }
+
+  .fx-card-body {
+    font-size: 0.75rem;
+    color: #666;
+    text-align: center;
+    padding: 10px 0;
+  }
   </style>
 </head>
 <body>
@@ -864,7 +939,7 @@
       <div class="daw-title">STUDIO DAW</div>
       <div class="daw-controls-top">
         <button class="btn-daw-play" id="dawPlayBtn">
-          <span>█ STOP</span>
+          <span>PLAY</span>
         </button>
       </div>
     </div>
@@ -916,6 +991,49 @@
           </div>
           <div class="daw-playhead" id="dawPlayheadMic"></div>
         </div>
+      </div>
+    </div>
+    
+    <div class="fx-section">
+      <div class="fx-title">WTYCZKI WOKALOWE (FX RACK)</div>
+      <div class="fx-grid">
+        
+        <!-- AutoTune -->
+        <div class="fx-card" id="fxAutoTune" onclick="this.classList.toggle('active')">
+          <div class="fx-card-header">
+            <span class="fx-card-name">AutoTune</span>
+            <div class="fx-toggle-btn"></div>
+          </div>
+          <div class="fx-card-body">Korekta tonacji</div>
+        </div>
+
+        <!-- Equalizer -->
+        <div class="fx-card" id="fxEqualizer" onclick="this.classList.toggle('active')">
+          <div class="fx-card-header">
+            <span class="fx-card-name">Equalizer</span>
+            <div class="fx-toggle-btn"></div>
+          </div>
+          <div class="fx-card-body">Korekcja barwy</div>
+        </div>
+
+        <!-- Saturation -->
+        <div class="fx-card" id="fxSaturation" onclick="this.classList.toggle('active')">
+          <div class="fx-card-header">
+            <span class="fx-card-name">Saturation</span>
+            <div class="fx-toggle-btn"></div>
+          </div>
+          <div class="fx-card-body">Ciepo i nasycenie</div>
+        </div>
+
+        <!-- Reverb -->
+        <div class="fx-card" id="fxReverb" onclick="this.classList.toggle('active')">
+          <div class="fx-card-header">
+            <span class="fx-card-name">Reverb</span>
+            <div class="fx-toggle-btn"></div>
+          </div>
+          <div class="fx-card-body">Przestrzeń i pogłos</div>
+        </div>
+
       </div>
     </div>
 
